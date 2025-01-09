@@ -1,0 +1,4 @@
+export const DEFINE_STATUS_RESPONSE = {
+  SUCCESS: 200,
+  ERROR: 400,
+}
