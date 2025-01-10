@@ -52,8 +52,8 @@ project-directory/
 ### Cài Đặt Dự Án
 
 ```bash
-git clone <repository-url>
-cd <project-directory>
+git clone https://github.com/Nhatnguyen150100/Ticket-Event-Booking-BE.git
+cd api-gateway
 npm install
 ```
 
