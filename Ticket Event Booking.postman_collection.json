@@ -1,0 +1,244 @@
+{
+	"info": {
+		"_postman_id": "f5945605-2786-4d0e-ba08-6361896f125c",
+		"name": "Ticket Event Booking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38240534"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"user2@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"admin@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Event",
+			"item": [
+				{
+					"name": "Create event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNjUwMjkyMSwiZXhwIjoxNzM2NTg5MzIxfQ.MGQXhsj4Q-9hKWqFOW5OYl-vBAkzcpWCBNx8ufgDJGe-VyZkVquWRgxkilLQO0D279qYDzKdz5PmEYu5fq4fkXh6urFcBmRfaaIQ9sVTvmQhWV9zhCowSlllB6uHplHayqqkURMtoaDp05K5N585IInjE0uzpU-V3t-YzMK0yW0lKvMNjPQfE-gmQE2f-dd4BwVelfnrj5Qtdz4jHnGPdUh59FUawxXzYHsgyY-gi1h-Lt2Qmxa-f2UstIHwhIqxGOBus630yOENC1VaSYipYdrn33ST30xB3go0DEjticZR6-h1L7Gdiw-TqHcyi93I9VqCqUUENumdt9TfyxCa8A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Concert Music Night\",\r\n  \"imageThumbnail\": \"https://example.com/image.jpg\",\r\n  \"time\": \"2025-05-20T19:00:00Z\",\r\n  \"location\": \"Central Park, New York\",\r\n  \"description\": \"Join us for an unforgettable night of music featuring top artists.\",\r\n  \"capacity\": 5000,\r\n  \"ticketsAvailable\": 2500,\r\n  \"priceTicket\": 50\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNjUwMjkyMSwiZXhwIjoxNzM2NTg5MzIxfQ.MGQXhsj4Q-9hKWqFOW5OYl-vBAkzcpWCBNx8ufgDJGe-VyZkVquWRgxkilLQO0D279qYDzKdz5PmEYu5fq4fkXh6urFcBmRfaaIQ9sVTvmQhWV9zhCowSlllB6uHplHayqqkURMtoaDp05K5N585IInjE0uzpU-V3t-YzMK0yW0lKvMNjPQfE-gmQE2f-dd4BwVelfnrj5Qtdz4jHnGPdUh59FUawxXzYHsgyY-gi1h-Lt2Qmxa-f2UstIHwhIqxGOBus630yOENC1VaSYipYdrn33ST30xB3go0DEjticZR6-h1L7Gdiw-TqHcyi93I9VqCqUUENumdt9TfyxCa8A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/events/6780ee913e1c88e37972c934",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								"6780ee913e1c88e37972c934"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all events",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNjUwMjkyMSwiZXhwIjoxNzM2NTg5MzIxfQ.MGQXhsj4Q-9hKWqFOW5OYl-vBAkzcpWCBNx8ufgDJGe-VyZkVquWRgxkilLQO0D279qYDzKdz5PmEYu5fq4fkXh6urFcBmRfaaIQ9sVTvmQhWV9zhCowSlllB6uHplHayqqkURMtoaDp05K5N585IInjE0uzpU-V3t-YzMK0yW0lKvMNjPQfE-gmQE2f-dd4BwVelfnrj5Qtdz4jHnGPdUh59FUawxXzYHsgyY-gi1h-Lt2Qmxa-f2UstIHwhIqxGOBus630yOENC1VaSYipYdrn33ST30xB3go0DEjticZR6-h1L7Gdiw-TqHcyi93I9VqCqUUENumdt9TfyxCa8A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNjUwMjkyMSwiZXhwIjoxNzM2NTg5MzIxfQ.MGQXhsj4Q-9hKWqFOW5OYl-vBAkzcpWCBNx8ufgDJGe-VyZkVquWRgxkilLQO0D279qYDzKdz5PmEYu5fq4fkXh6urFcBmRfaaIQ9sVTvmQhWV9zhCowSlllB6uHplHayqqkURMtoaDp05K5N585IInjE0uzpU-V3t-YzMK0yW0lKvMNjPQfE-gmQE2f-dd4BwVelfnrj5Qtdz4jHnGPdUh59FUawxXzYHsgyY-gi1h-Lt2Qmxa-f2UstIHwhIqxGOBus630yOENC1VaSYipYdrn33ST30xB3go0DEjticZR6-h1L7Gdiw-TqHcyi93I9VqCqUUENumdt9TfyxCa8A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Concert Music Night update\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/events/6780ee913e1c88e37972c934",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								"6780ee913e1c88e37972c934"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNjUwMjkyMSwiZXhwIjoxNzM2NTg5MzIxfQ.MGQXhsj4Q-9hKWqFOW5OYl-vBAkzcpWCBNx8ufgDJGe-VyZkVquWRgxkilLQO0D279qYDzKdz5PmEYu5fq4fkXh6urFcBmRfaaIQ9sVTvmQhWV9zhCowSlllB6uHplHayqqkURMtoaDp05K5N585IInjE0uzpU-V3t-YzMK0yW0lKvMNjPQfE-gmQE2f-dd4BwVelfnrj5Qtdz4jHnGPdUh59FUawxXzYHsgyY-gi1h-Lt2Qmxa-f2UstIHwhIqxGOBus630yOENC1VaSYipYdrn33ST30xB3go0DEjticZR6-h1L7Gdiw-TqHcyi93I9VqCqUUENumdt9TfyxCa8A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/events/6780ee913e1c88e37972c934",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								"6780ee913e1c88e37972c934"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
