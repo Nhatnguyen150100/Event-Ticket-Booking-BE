@@ -12,9 +12,9 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    logger.info("Kết nối đến MongoDB thành công");
+    logger.info("Connected to Mongoose");
   } catch (error) {
-    logger.error("Lỗi kết nối MongoDB:", error);
+    logger.error("Connect to Mongoose failed:", error);
     process.exit(1);
   }
 };

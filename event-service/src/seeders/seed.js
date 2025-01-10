@@ -1,9 +1,9 @@
 const logger = require("../config/winston");
-const seedUsers = require("./user_seeders");
+const seedEvents = require("./event_seeders");
 
 const runSeeders = async () => {
   logger.info("Seeders started");
-  await seedUsers();
+  await seedEvents();
   logger.info("Seeders succeeded");
 };
 

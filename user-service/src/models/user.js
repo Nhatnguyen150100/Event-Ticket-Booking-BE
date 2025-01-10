@@ -46,10 +46,10 @@ userSchema.methods.isValidPassword = async function (password) {
 const deleteMany = async () => {
   try {
     const result = await User.deleteMany({});
-    logger.info(`Đã xóa ${result.deletedCount} người dùng.`);
+    logger.info(`Delete ${result.deletedCount} item successfully`);
     return result;
   } catch (error) {
-    console.error("Lỗi khi xóa người dùng:", error);
+    console.error("Delete failed:", error);
     throw error;
   }
 };
@@ -57,10 +57,10 @@ const deleteMany = async () => {
 const insertMany = async (users) => {
   try {
     const result = await User.insertMany(users);
-    logger.info(`Đã thêm ${result.length} người dùng.`);
+    logger.info(`Insert ${result.length} item successfully`);
     return result;
   } catch (error) {
-    logger.error("Lỗi khi thêm người dùng:", error);
+    logger.error("Insert failed:", error);
     throw error;
   }
 };

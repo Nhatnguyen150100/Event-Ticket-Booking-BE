@@ -12,6 +12,13 @@ const DEFINE_ROUTERS = [
       "^/": "/api/auth/",
     },
   },
+  {
+    pathName: "/events",
+    target: process.env.EVENT_SERVICE_URL,
+    pathRewrite: {
+      "^/": "/api/events/",
+    },
+  },
 ];
 
 const setUpRouters = (app) => {
