@@ -4,14 +4,22 @@ import eventController from "../controllers/eventController.js";
 import tokenMiddleware from "../middleware/tokenMiddleware.js";
 const eventRouters = express.Router();
 
-eventRouters.get("/", tokenMiddleware.verifyToken, eventController.getAllEvents);
+eventRouters.get(
+  "/",
+  tokenMiddleware.verifyToken,
+  eventController.getAllEvents,
+);
 
 eventRouters.post(
   "/",
   tokenMiddleware.verifyTokenAdmin,
   eventController.createEvent,
 );
-eventRouters.get("/:id", tokenMiddleware.verifyToken, eventController.getEventById);
+eventRouters.get(
+  "/:id",
+  tokenMiddleware.verifyToken,
+  eventController.getEventById,
+);
 eventRouters.put(
   "/:id",
   tokenMiddleware.verifyTokenAdmin,

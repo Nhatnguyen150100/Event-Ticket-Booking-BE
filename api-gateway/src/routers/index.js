@@ -4,19 +4,32 @@ const dotenv = require("dotenv");
 const logger = require("../config/winston");
 dotenv.config();
 
+const PREFIX_URL = "/v1";
+
+const buildPathName = (name) => {
+  return `${PREFIX_URL}/${name}`;
+};
+
 const DEFINE_ROUTERS = [
   {
-    pathName: "/auth",
+    pathName: buildPathName("auth"),
     target: process.env.AUTH_SERVICE_URL,
     pathRewrite: {
       "^/": "/api/auth/",
     },
   },
   {
-    pathName: "/events",
+    pathName: buildPathName("events"),
     target: process.env.EVENT_SERVICE_URL,
     pathRewrite: {
       "^/": "/api/events/",
+    },
+  },
+  {
+    pathName: buildPathName("events-static"),
+    target: process.env.EVENT_SERVICE_URL,
+    pathRewrite: {
+      "^/": "/",
     },
   },
 ];
@@ -40,7 +53,9 @@ const setUpRouters = (app) => {
         },
       }),
     );
-    logger.info(`Setting up router ${router.pathName} to ${router.target}${router.pathRewrite['^/']}`);
+    logger.info(
+      `Setting up router ${router.pathName} to ${router.target}${router.pathRewrite["^/"]}`,
+    );
   });
 };
 
