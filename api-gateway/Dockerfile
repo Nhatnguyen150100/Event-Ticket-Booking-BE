@@ -1,4 +1,4 @@
-FROM node:18.14.2-alpine
+FROM node:latest
 ENV NODE_ENV=production
 ENV NODE_PATH="/usr/local/lib/node_modules:/app/node_modules"
 WORKDIR /app

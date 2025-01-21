@@ -8,6 +8,8 @@ services:
       - "8081:8081"
     networks:
       - my-network
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/db_even_booking
 
   event-service:
     build:
@@ -16,6 +18,8 @@ services:
       - "8082:8082"
     networks:
       - my-network
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/db_even_booking
 
   api-gateway:
     build:
@@ -28,6 +32,18 @@ services:
       - user-service
       - event-service
 
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - my-network
+    volumes:
+      - mongo-data:/data/db
+
 networks:
   my-network:
     driver: bridge
+
+volumes:
+  mongo-data:
