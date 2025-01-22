@@ -4,6 +4,7 @@ services:
   user-service:
     build:
       context: ./user-service
+      dockerfile: ./Dockerfile
     ports:
       - "8081:8081"
     networks:
@@ -14,6 +15,7 @@ services:
   event-service:
     build:
       context: ./event-service
+      dockerfile: ./Dockerfile
     ports:
       - "8082:8082"
     networks:
@@ -24,10 +26,14 @@ services:
   api-gateway:
     build:
       context: ./api-gateway
+      dockerfile: ./Dockerfile
     ports:
       - "8080:8080"
     networks:
       - my-network
+    environment:
+      - AUTH_SERVICE_URL=http://user-service:8081
+      - EVENT_SERVICE_URL=http://event-service:8082
     depends_on:
       - user-service
       - event-service

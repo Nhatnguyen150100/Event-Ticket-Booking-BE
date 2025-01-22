@@ -45,6 +45,7 @@ const setUpRouters = (app) => {
       router.pathName,
       createProxyMiddleware({
         target: router.target,
+        secure: true,
         changeOrigin: true,
         pathRewrite: router.pathRewrite,
         onError: (err, req, res) => {
