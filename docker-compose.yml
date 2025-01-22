@@ -1,6 +1,15 @@
 version: "3.8"
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"       
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+
   user-service:
     build:
       context: ./user-service
@@ -11,6 +20,7 @@ services:
       - my-network
     environment:
       - MONGO_URI=mongodb://mongo:27017/db_even_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
 
   event-service:
     build:
@@ -22,6 +32,7 @@ services:
       - my-network
     environment:
       - MONGO_URI=mongodb://mongo:27017/db_even_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
 
   api-gateway:
     build:

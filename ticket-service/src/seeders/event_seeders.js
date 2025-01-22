@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const logger = require("../config/winston");
-const { deleteMany, insertMany } = require("../models/event");
+const { deleteMany, insertMany } = require("../models/ticket");
 dotenv.config();
 
 const { connect, connection } = mongoose;

@@ -44,7 +44,7 @@ const seedUsers = async () => {
   await deleteMany();
 
   await insertMany(users);
-  logger.info("Dữ liệu người dùng đã được chèn thành công!");
+  logger.info("Insert items successfully");
 
   connection.close();
 };

@@ -10,21 +10,21 @@ const eventService = {
         name,
         imageThumbnail,
         time,
-        type,
         location,
         description,
         capacity,
-        eventOrganization
+        ticketsAvailable,
+        priceTicket,
       } = data;
       const newEvent = new Event({
         name,
         imageThumbnail,
         time,
-        type,
         location,
         description,
         capacity,
-        eventOrganization
+        ticketsAvailable,
+        priceTicket,
       });
       const savedEvent = await newEvent.save();
       return new BaseSuccessResponse({
@@ -38,7 +38,7 @@ const eventService = {
   },
   getEventById: async (id) => {
     try {
-      const event = await Event.findById(id).populate('ticketIds');
+      const event = await Event.findById(id);
       if (!event) {
         return new BaseErrorResponse({ message: "Event not found" });
       }
@@ -80,22 +80,15 @@ const eventService = {
       return new BaseErrorResponse({ message: "Error deleting event" });
     }
   },
-  getAllEvents: async (page = 1, limit = 10, name = "", type = "") => {
+  getAllEvents: async (page = 1, limit = 10, name = "") => {
     try {
       const query = {};
       if (name) {
         query.name = { $regex: name, $options: "i" };
       }
 
-      if(type) {
-        query = {
-          ...query,
-          type
-        }
-      }
-
       const skip = (page - 1) * limit;
-      const events = await Event.find(query).skip(skip).limit(limit).populate('ticketIds');
+      const events = await Event.find(query).skip(skip).limit(limit);
       const totalCount = await Event.countDocuments(query);
 
       return new BaseResponseList({

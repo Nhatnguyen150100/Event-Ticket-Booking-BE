@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, default: mongoose } = require("mongoose");
 const logger = require("../config/winston");
 
 const eventSchema = new Schema(
@@ -9,6 +9,15 @@ const eventSchema = new Schema(
     },
     imageThumbnail: {
       type: String,
+    },
+    type: {
+      type: String,
+      enum: ["MUSIC_CONCERT", "CULTURAL_ARTS", "TRAVEL", "WORKSHOP", "MOVIE", "TOUR", "SPORTS", "NEWS", "OTHER"],
+      default: "OTHER",
+    },
+    eventOrganization: {
+      type: String,
+      required: true,
     },
     time: {
       type: Date,
@@ -25,11 +34,22 @@ const eventSchema = new Schema(
       type: Number,
       required: true,
     },
-    ticketsAvailable: { type: Number, required: true },
-    priceTicket: {
-      type: Number,
-      required: true,
-    },
+    ticketIds: [{ 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'Ticket'
+    }]
+    // tickets: [
+    //   {
+    //     type: {
+    //       type: String,
+    //       enum: ["VIP", "GENERAL", "VIP_PLUS", "VIP_PLATINUM"],
+    //       default: "GENERAL",
+    //     },
+    //     price: { type: Number, required: true },
+    //     quantity: { type: Number, required: true },
+    //     soldQuantity: { type: Number, default: 0 },
+    //   },
+    // ],
   },
   { timestamps: true },
 );

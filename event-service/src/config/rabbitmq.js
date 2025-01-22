@@ -1,3 +1,8 @@
+"use strict";
+import { config } from 'dotenv';
+import logger from './winston';
+config();
+
 const amqp = require("amqplib");
 
 class RabbitMQ {
@@ -9,8 +14,14 @@ class RabbitMQ {
 
   async connect() {
     if (!this.connection) {
-      this.connection = await amqp.connect(this.url);
-      this.channel = await this.connection.createChannel();
+      try {
+        this.connection = await amqp.connect(this.url);
+        this.channel = await this.connection.createChannel();
+        logger.info("Connected to RabbitMQ successfully");
+      } catch (error) {
+        logger.error("Failed to connect to RabbitMQ:", error.message);
+        throw error;
+      }
     }
   }
 
@@ -18,7 +29,7 @@ class RabbitMQ {
     await this.connect();
     await this.channel.assertQueue(queue);
     this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
-    console.log(`Sent to ${queue}:`, message);
+    logger.info(`Sent to ${queue}:`, message);
   }
 
   async receive(queue, callback) {
@@ -27,11 +38,13 @@ class RabbitMQ {
 
     this.channel.consume(queue, (msg) => {
       const message = JSON.parse(msg.content.toString());
-      console.log(`Received from ${queue}:`, message);
+      logger.info(`Received from ${queue}:`, message);
       callback(message);
       this.channel.ack(msg);
     });
   }
 }
 
-module.exports = RabbitMQ;
+const rabbitmq = new RabbitMQ(process.env.RABBITMQ_URL);
+
+export default rabbitmq;
