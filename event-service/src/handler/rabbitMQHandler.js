@@ -1,27 +1,56 @@
 "use strict";
+
 import { BaseErrorResponse, BaseSuccessResponse } from "../config/baseResponse";
 import logger from "../config/winston";
-
-const { default: rabbitMQ } = require("../config/rabbitMQ");
+import rabbitMQ from "../config/rabbitMQ";
 
 const rabbitMQHandler = {
-  sendDeleteTicketsRequest: async (ticketIds) => {
+  sendDeleteTicketsRequest: async (eventId) => {
     try {
-      await rabbitMQ.send("delete_tickets_queue", { ticketIds }, (response) => {
-        if (response.status === "success") {
-          return new BaseSuccessResponse({
-            data: response,
-          });
-        } else {
-          return new BaseErrorResponse({
-            message: "Failed to send delete tickets request",
-          });
-        }
+      await rabbitMQ.send("delete_tickets_queue", {
+        eventId,
       });
     } catch (error) {
       logger.error(error.message);
       return new BaseErrorResponse({
         message: "Error sending delete tickets request",
+      });
+    }
+  },
+
+  getTicketsByEventId: async (eventId) => {
+    const queue = "ticket_request_queue";
+    const responseQueue = "ticket_response_queue";
+    const correlationId = generateUuid();
+
+    try {
+      await rabbitMQ.send(queue, eventId, {
+        correlationId,
+        replyTo: responseQueue,
+      });
+
+      await rabbitMQ.receive(responseQueue, (response, properties) => {
+        if (properties.correlationId !== correlationId) {
+          logger.error("Invalid correlationId");
+          return Promise.reject(
+            new BaseErrorResponse({ message: "Invalid correlationId" }),
+          );
+        }
+
+        if (response.status === 200) {
+          return Promise.resolve(
+            new BaseSuccessResponse({ data: response.data }),
+          );
+        } else {
+          return Promise.reject(
+            new BaseErrorResponse({ message: response.message }),
+          );
+        }
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return new BaseErrorResponse({
+        message: "Error getting tickets request",
       });
     }
   },

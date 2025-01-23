@@ -13,7 +13,6 @@ dotenv.config();
 import connectDB from "./config/database.js";
 import morgan from "morgan";
 import setUpRouters from "./routes/index.js";
-import rabbitMQ from "./config/rabbitMQ.js";
 import rabbitMQListener from "./handler/rabbitMQListener.js";
 
 const logger = require("./config/winston.js");
@@ -21,7 +20,6 @@ const logger = require("./config/winston.js");
 dotenv.config();
 
 connectDB();
-rabbitMQ.connect();
 rabbitMQListener();
 const app = express();
 

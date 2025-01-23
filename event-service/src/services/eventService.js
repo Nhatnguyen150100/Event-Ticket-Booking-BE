@@ -43,10 +43,11 @@ const eventService = {
   },
   getEventById: async (id) => {
     try {
-      const event = await Event.findById(id).populate("ticketIds");
+      const event = await Event.findById(id);
       if (!event) {
         return new BaseErrorResponse({ message: "Event not found" });
       }
+
       return new BaseSuccessResponse({
         data: event,
         message: "Event fetched successfully",
@@ -75,15 +76,14 @@ const eventService = {
   },
   deleteEvent: async (id) => {
     try {
-      const event = await Event.findById(eventId);
-      if (!deletedEvent) {
+      const event = await Event.findById(id);
+      if (!event) {
         return new BaseErrorResponse({ message: "Event not found" });
       }
-      const ticketIds = event.ticketIds;
 
-      await rabbitMQHandler.sendDeleteTicketsRequest(ticketIds);
+      await rabbitMQHandler.sendDeleteTicketsRequest(event._id);
 
-      const deletedEvent = await Event.findByIdAndDelete(id);
+      await Event.findByIdAndDelete(id);
 
       return new BaseSuccessResponse({ message: "Event deleted successfully" });
     } catch (error) {
@@ -106,10 +106,7 @@ const eventService = {
       }
 
       const skip = (page - 1) * limit;
-      const events = await Event.find(query)
-        .skip(skip)
-        .limit(limit)
-        .populate("ticketIds");
+      const events = await Event.find(query).skip(skip).limit(limit);
       const totalCount = await Event.countDocuments(query);
 
       return new BaseResponseList({

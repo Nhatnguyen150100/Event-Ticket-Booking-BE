@@ -1,46 +1,46 @@
 "use strict";
 
-import eventService from "../services/ticketsService";
+import ticketsService from "../services/ticketsService";
 
-const eventController = {
-  createEvent: async (req, res) => {
+const ticketController = {
+  createTicket: async (req, res) => {
     try {
-      const result = await eventService.createEvent(req.body);
+      const result = await ticketsService.createTicket(req.body);
       res.status(result.status).json(result);
     } catch (error) {
       res.status(error.status).json(error);
     }
   },
-  getEventById: async (req, res) => {
+  getTicketById: async (req, res) => {
     const { id } = req.params;
     try {
-      const result = await eventService.getEventById(id);
+      const result = await ticketsService.getTicketById(id);
       res.status(result.status).json(result);
     } catch (error) {
       res.status(error.status).json(error);
     }
   },
-  updateEvent: async (req, res) => {
+  updateTicket: async (req, res) => {
     const { id } = req.params;
     try {
-      const result = await eventService.updateEvent(id, req.body);
+      const result = await ticketsService.updateTicket(id, req.body);
       res.status(result.status).json(result);
     } catch (error) {
       res.status(error.status).json(error);
     }
   },
-  deleteEvent: async (req, res) => {
+  deleteTicket: async (req, res) => {
     const { id } = req.params;
     try {
-      const result = await eventService.deleteEvent(id);
+      const result = await ticketsService.deleteTicket(id);
       res.status(result.status).json(result);
     } catch (error) {
       res.status(error.status).json(error);
     }
   },
-  getAllEvents: async (req, res) => {
+  getAllTicketFromEvent: async (req, res) => {
     try {
-      const result = await eventService.getAllEvents(req.query);
+      const result = await ticketsService.getAllTicketFromEvent(req.query);
       res.status(result.status).json(result);
     } catch (error) {
       res.status(error.status).json(error);
@@ -48,4 +48,4 @@ const eventController = {
   },
 };
 
-export default eventController;
+export default ticketController;

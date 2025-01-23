@@ -25,23 +25,27 @@ class RabbitMQ {
     }
   }
 
-  async send(queue, message) {
+  async send(queue, message, options) {
     await this.connect();
     await this.channel.assertQueue(queue);
-    this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
     logger.info(`Sent to ${queue}:`, message);
+    this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), options);
   }
 
   async receive(queue, callback) {
-    await this.connect();
-    await this.channel.assertQueue(queue);
+    try {
+      await this.connect();
+      await this.channel.assertQueue(queue);
 
-    this.channel.consume(queue, (msg) => {
-      const message = JSON.parse(msg.content.toString());
-      logger.info(`Received from ${queue}:`, message);
-      callback(message);
-      this.channel.ack(msg);
-    });
+      this.channel.consume(queue, (msg) => {
+        const response = JSON.parse(msg.content.toString());
+        logger.info(`Received from ${queue}`);
+        callback(response, msg.properties);
+        this.channel.ack(msg);
+      });
+    } catch (error) {
+      logger.error(error.message);
+    }
   }
 }
 

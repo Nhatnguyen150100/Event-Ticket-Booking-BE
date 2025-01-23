@@ -26,6 +26,13 @@ const DEFINE_ROUTERS = [
     },
   },
   {
+    pathName: buildPathName("tickets"),
+    target: process.env.TICKET_SERVICE_URL,
+    pathRewrite: {
+      "^/": "/api/tickets/",
+    },
+  },
+  {
     pathName: buildPathName("events-static"),
     target: process.env.EVENT_SERVICE_URL,
     pathRewrite: {

@@ -1,3 +1,4 @@
+"use strict";
 import {
   BaseErrorResponse,
   BaseResponseList,
@@ -44,9 +45,18 @@ const ticketsService = {
   },
   updateTicket: async (id, data) => {
     try {
-      const updatedTicket = await Ticket.findByIdAndUpdate(id, data, {
-        new: true,
-      });
+      const { type, price, quantity } = data;
+      const updatedTicket = await Ticket.findByIdAndUpdate(
+        id,
+        {
+          type,
+          price,
+          quantity,
+        },
+        {
+          new: true,
+        },
+      );
       if (!updatedTicket) {
         return new BaseErrorResponse({ message: "Ticket not found" });
       }
@@ -73,9 +83,9 @@ const ticketsService = {
       return new BaseErrorResponse({ message: "Error deleting ticket" });
     }
   },
-  deleteListTickets: async (ticketIds) => {
+  deleteListTickets: async (eventId) => {
     try {
-      await Ticket.deleteMany({ _id: { $in: ticketIds } });
+      await Ticket.deleteMany({ eventId });
       return new BaseSuccessResponse({
         message: "Tickets deleted successfully",
       });
@@ -84,26 +94,29 @@ const ticketsService = {
       return new BaseErrorResponse({ message: "Error deleting tickets" });
     }
   },
-  getAllTicketFromEvent: async (page = 1, limit = 10, eventId) => {
+  getAllTicketFromEvent: async ({ page = 1, limit = 10, eventId }) => {
     try {
-      const query = {};
-      if (name) {
-        query.name = { $regex: name, $options: "i" };
+      if (!eventId) {
+        return new BaseErrorResponse({ message: "Event ID is required" });
       }
 
+      const query = {
+        eventId,
+      };
+
       const skip = (page - 1) * limit;
-      const events = await Event.find(query).skip(skip).limit(limit);
-      const totalCount = await Event.countDocuments(query);
+      const tickets = await Ticket.find(query).skip(skip).limit(limit);
+      const totalCount = await Ticket.countDocuments(query);
 
       return new BaseResponseList({
         status: DEFINE_STATUS_RESPONSE.SUCCESS,
-        list: events,
+        list: tickets,
         totalCount,
-        message: "Events fetched successfully",
+        message: "Tickets fetched successfully",
       });
     } catch (error) {
       logger.error(error.message);
-      return new BaseErrorResponse({ message: "Error fetching events" });
+      return new BaseErrorResponse({ message: "Error fetching tickets" });
     }
   },
 };

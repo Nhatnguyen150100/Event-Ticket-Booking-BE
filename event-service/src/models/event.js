@@ -44,12 +44,6 @@ const eventSchema = new Schema(
       type: Number,
       required: true,
     },
-    ticketIds: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Ticket",
-      },
-    ],
   },
   { timestamps: true },
 );
