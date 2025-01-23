@@ -1,6 +1,11 @@
-import { BaseErrorResponse, BaseResponseList, BaseSuccessResponse } from "../config/baseResponse";
+import {
+  BaseErrorResponse,
+  BaseResponseList,
+  BaseSuccessResponse,
+} from "../config/baseResponse";
 import { DEFINE_STATUS_RESPONSE } from "../config/statusResponse";
 import logger from "../config/winston";
+import rabbitMQHandler from "../handler/rabbitMQHandler";
 import { Event } from "../models/event";
 
 const eventService = {
@@ -14,7 +19,7 @@ const eventService = {
         location,
         description,
         capacity,
-        eventOrganization
+        eventOrganization,
       } = data;
       const newEvent = new Event({
         name,
@@ -24,7 +29,7 @@ const eventService = {
         location,
         description,
         capacity,
-        eventOrganization
+        eventOrganization,
       });
       const savedEvent = await newEvent.save();
       return new BaseSuccessResponse({
@@ -38,7 +43,7 @@ const eventService = {
   },
   getEventById: async (id) => {
     try {
-      const event = await Event.findById(id).populate('ticketIds');
+      const event = await Event.findById(id).populate("ticketIds");
       if (!event) {
         return new BaseErrorResponse({ message: "Event not found" });
       }
@@ -70,10 +75,16 @@ const eventService = {
   },
   deleteEvent: async (id) => {
     try {
-      const deletedEvent = await Event.findByIdAndDelete(id);
+      const event = await Event.findById(eventId);
       if (!deletedEvent) {
         return new BaseErrorResponse({ message: "Event not found" });
       }
+      const ticketIds = event.ticketIds;
+
+      await rabbitMQHandler.sendDeleteTicketsRequest(ticketIds);
+
+      const deletedEvent = await Event.findByIdAndDelete(id);
+
       return new BaseSuccessResponse({ message: "Event deleted successfully" });
     } catch (error) {
       logger.error(error.message);
@@ -87,15 +98,18 @@ const eventService = {
         query.name = { $regex: name, $options: "i" };
       }
 
-      if(type) {
+      if (type) {
         query = {
           ...query,
-          type
-        }
+          type,
+        };
       }
 
       const skip = (page - 1) * limit;
-      const events = await Event.find(query).skip(skip).limit(limit).populate('ticketIds');
+      const events = await Event.find(query)
+        .skip(skip)
+        .limit(limit)
+        .populate("ticketIds");
       const totalCount = await Event.countDocuments(query);
 
       return new BaseResponseList({

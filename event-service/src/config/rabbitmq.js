@@ -1,6 +1,6 @@
 "use strict";
-import { config } from 'dotenv';
-import logger from './winston';
+import { config } from "dotenv";
+import logger from "./winston";
 config();
 
 const amqp = require("amqplib");
@@ -45,6 +45,6 @@ class RabbitMQ {
   }
 }
 
-const rabbitmq = new RabbitMQ(process.env.RABBITMQ_URL);
+const rabbitMQ = new RabbitMQ(process.env.RABBITMQ_URL);
 
-export default rabbitmq;
+export default rabbitMQ;

@@ -3,31 +3,26 @@ const logger = require("../config/winston");
 
 const ticketSchema = new Schema(
   {
-    availableTicket: {
-      type: Number,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    idCategory: {
+    eventId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "Category",
-    },
-    idEvent: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
       ref: "Event",
+      required: true,
     },
+    type: {
+      type: String,
+      enum: ["VIP", "GENERAL", "VIP_PLUS", "VIP_PLATINUM"],
+      default: "GENERAL",
+    },
+    price: { type: Number, required: true },
+    quantity: { type: Number, required: true },
+    soldQuantity: { type: Number, default: 0 },
   },
   { timestamps: true },
 );
 
 const deleteMany = async () => {
   try {
-    const result = await Event.deleteMany({});
+    const result = await Ticket.deleteMany({});
     logger.info(`Delete ${result.deletedCount} item successfully`);
     return result;
   } catch (error) {
@@ -38,7 +33,7 @@ const deleteMany = async () => {
 
 const insertMany = async (items) => {
   try {
-    const result = await Event.insertMany(items);
+    const result = await Ticket.insertMany(items);
     logger.info(`Insert ${result.length} item successfully`);
     return result;
   } catch (error) {
@@ -47,6 +42,6 @@ const insertMany = async (items) => {
   }
 };
 
-const Event = model("Event", ticketSchema);
+const Ticket = model("Ticket", ticketSchema);
 
-module.exports = { Event, deleteMany, insertMany };
+module.exports = { Ticket, deleteMany, insertMany };

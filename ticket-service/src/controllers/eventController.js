@@ -1,6 +1,6 @@
 "use strict";
 
-import eventService from "../services/eventService";
+import eventService from "../services/ticketsService";
 
 const eventController = {
   createEvent: async (req, res) => {

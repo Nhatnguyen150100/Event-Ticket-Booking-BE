@@ -12,7 +12,17 @@ const eventSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["MUSIC_CONCERT", "CULTURAL_ARTS", "TRAVEL", "WORKSHOP", "MOVIE", "TOUR", "SPORTS", "NEWS", "OTHER"],
+      enum: [
+        "MUSIC_CONCERT",
+        "CULTURAL_ARTS",
+        "TRAVEL",
+        "WORKSHOP",
+        "MOVIE",
+        "TOUR",
+        "SPORTS",
+        "NEWS",
+        "OTHER",
+      ],
       default: "OTHER",
     },
     eventOrganization: {
@@ -34,22 +44,12 @@ const eventSchema = new Schema(
       type: Number,
       required: true,
     },
-    ticketIds: [{ 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: 'Ticket'
-    }]
-    // tickets: [
-    //   {
-    //     type: {
-    //       type: String,
-    //       enum: ["VIP", "GENERAL", "VIP_PLUS", "VIP_PLATINUM"],
-    //       default: "GENERAL",
-    //     },
-    //     price: { type: Number, required: true },
-    //     quantity: { type: Number, required: true },
-    //     soldQuantity: { type: Number, default: 0 },
-    //   },
-    // ],
+    ticketIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Ticket",
+      },
+    ],
   },
   { timestamps: true },
 );
