@@ -23,6 +23,8 @@ const events = [
   {
     name: "Concert Music Night",
     imageThumbnail: "https://images.unsplash.com/photo-1429514513361-8fa32282fd5f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    type: "MUSIC_CONCERT",
+    eventOrganization: "Music Events Co.",
     time: "2025-05-20T19:00:00Z",
     location: "Central Park, New York",
     description: "Join us for an unforgettable night of music featuring top artists.",
@@ -31,6 +33,8 @@ const events = [
   {
     name: "Art Exhibition",
     imageThumbnail: "https://images.unsplash.com/photo-1470229538611-16ba8c7ffbd7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    type: "CULTURAL_ARTS",
+    eventOrganization: "Art Gallery Inc.",
     time: "2025-06-15T10:00:00Z",
     location: "Art Gallery, Los Angeles",
     description: "Explore the latest trends in contemporary art.",
@@ -39,6 +43,8 @@ const events = [
   {
     name: "Tech Conference 2025",
     imageThumbnail: "https://images.unsplash.com/photo-1429514513361-8fa32282fd5f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    type: "OTHER",
+    eventOrganization: "Tech Innovators",
     time: "2025-07-10T09:00:00Z",
     location: "Convention Center, San Francisco",
     description: "Join industry leaders for discussions on the future of technology.",
@@ -47,6 +53,8 @@ const events = [
   {
     name: "Food Festival",
     imageThumbnail: "https://images.unsplash.com/photo-1429514513361-8fa32282fd5f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    type: "OTHER",
+    eventOrganization: "Foodies United",
     time: "2025-08-25T12:00:00Z",
     location: "City Park, Chicago",
     description: "Taste delicious food from around the world.",
@@ -55,6 +63,8 @@ const events = [
   {
     name: "Marathon 2025",
     imageThumbnail: "https://images.unsplash.com/photo-1470229538611-16ba8c7ffbd7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    type: "SPORTS",
+    eventOrganization: "Miami Marathon Org.",
     time: "2025-09-30T07:00:00Z",
     location: "Downtown, Miami",
     description: "Join us for a day of fitness and fun!",

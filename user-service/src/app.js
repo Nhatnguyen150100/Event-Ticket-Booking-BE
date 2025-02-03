@@ -13,14 +13,12 @@ dotenv.config();
 import connectDB from "./config/database";
 import morgan from "morgan";
 import setUpRouters from "./routes/index.js";
-import rabbitmq from "./config/rabbitmq.js";
 
 const logger = require("./config/winston.js");
 
 dotenv.config();
 
 connectDB();
-rabbitmq.connect();
 const app = express();
 
 app.use(
