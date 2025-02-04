@@ -6,7 +6,6 @@ const eventRouters = express.Router();
 
 eventRouters.get(
   "/",
-  tokenMiddleware.verifyToken,
   eventController.getAllEvents,
 );
 
@@ -17,7 +16,6 @@ eventRouters.post(
 );
 eventRouters.get(
   "/:id",
-  tokenMiddleware.verifyToken,
   eventController.getEventById,
 );
 eventRouters.put(
