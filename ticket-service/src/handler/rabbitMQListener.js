@@ -17,6 +17,16 @@ const rabbitMQListener = () => {
       correlationId,
     });
   });
+  rabbitMQ.receive("ticket_detail_request_queue", async (message, properties) => {
+    const ticketId = message;
+    const tickets = await ticketsService.getTicketById(ticketId);
+
+    const { correlationId, replyTo } = properties;
+
+    await rabbitMQ.send(replyTo, tickets, {
+      correlationId,
+    });
+  });
 };
 
 export default rabbitMQListener;

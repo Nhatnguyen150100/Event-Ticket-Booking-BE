@@ -33,6 +33,13 @@ const DEFINE_ROUTERS = [
     },
   },
   {
+    pathName: buildPathName("bookings"),
+    target: process.env.BOOKING_SERVICE_URL,
+    pathRewrite: {
+      "^/": "/api/bookings/",
+    },
+  },
+  {
     pathName: buildPathName("events-static"),
     target: process.env.EVENT_SERVICE_URL,
     pathRewrite: {

@@ -1,13 +1,13 @@
 "use strict";
 
+import bookingRouters from "./bookingRouters";
 import imagesRouter from "./images";
-import ticketRouters from "./ticketRouters";
 
-const prefixURL = "/api/tickets";
+const prefixURL = "/api/bookings";
 
 const setUpRouters = (app) => {
   app.use(`${prefixURL}/images`, imagesRouter);
-  app.use(prefixURL, ticketRouters)
+  app.use(prefixURL, bookingRouters)
 }
 
 export default setUpRouters;

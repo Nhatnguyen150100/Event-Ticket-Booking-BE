@@ -24,7 +24,7 @@ services:
     networks:
       - my-network
     environment:
-      - MONGO_URI=mongodb://mongo:27017/db_even_booking
+      - MONGO_URI=mongodb://mongo:27017/db_event_booking
       - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
     depends_on:
       - rabbitmq
@@ -39,7 +39,7 @@ services:
     networks:
       - my-network
     environment:
-      - MONGO_URI=mongodb://mongo:27017/db_even_booking
+      - MONGO_URI=mongodb://mongo:27017/db_event_booking
       - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
     depends_on:
       - rabbitmq
@@ -54,7 +54,7 @@ services:
     networks:
       - my-network
     environment:
-      - MONGO_URI=mongodb://mongo:27017/db_even_booking
+      - MONGO_URI=mongodb://mongo:27017/db_event_booking
       - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
     depends_on:
       - rabbitmq
