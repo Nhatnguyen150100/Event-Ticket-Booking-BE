@@ -7,24 +7,37 @@ import {
 import { DEFINE_STATUS_RESPONSE } from "../config/statusResponse";
 import logger from "../config/winston";
 import rabbitMQHandler from "../handler/rabbitMQHandler";
-import { Ticket } from "../models/booking";
+import { Booking } from "../models/booking";
 
 const bookingService = {
   createBooking: async (data) => {
     try {
-      const { userId, eventId, ticketId, quantity } = data;
+      const { userId, ticketId, quantity } = data;
+      if(!quantity) {
+        return new BaseErrorResponse({ message: "Quantity must be provided" });
+      }
       const ticketDetail = await rabbitMQHandler.getTicketFromTicketId(ticketId);
-      if (!ticketDetail.data._id) {
+      if (!ticketDetail.data?._id) {
         return new BaseErrorResponse({ message: "Invalid ticketId" });
       }
+      const booking = new Booking({
+        userId,
+        ticketId,
+        eventId: ticketDetail.data.eventId,
+        quantity,
+        totalPrice: ticketDetail.data.price * quantity
+      })
+      console.log("🚀 ~ createBooking: ~ booking:", booking);
+
+      await booking.save();
 
       return new BaseSuccessResponse({
-        data: ticketDetail.data,
+        data: booking,
         message: "Booking created successfully",
       });
     } catch (error) {
       logger.error(error.message);
-      return new BaseErrorResponse({ message: "Error creating ticket" });
+      return new BaseErrorResponse({ message: error?.message ?? "Created booking failed" });
     }
   },
   // getTicketById: async (id) => {

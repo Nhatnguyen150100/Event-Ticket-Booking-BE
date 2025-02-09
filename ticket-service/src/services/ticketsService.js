@@ -6,6 +6,7 @@ import {
 } from "../config/baseResponse";
 import { DEFINE_STATUS_RESPONSE } from "../config/statusResponse";
 import logger from "../config/winston";
+import rabbitMQHandler from "../handler/rabbitMQHandler";
 import { Ticket } from "../models/ticket";
 
 const ticketsService = {
@@ -34,8 +35,12 @@ const ticketsService = {
       if (!ticket) {
         return new BaseErrorResponse({ message: "Ticket not found" });
       }
+      const event = await rabbitMQHandler.getEventDetail(ticket.eventId);
+      if (!event) {
+        return new BaseErrorResponse({ message: "Event not found" });
+      }
       return new BaseSuccessResponse({
-        data: ticket,
+        data: {...ticket.toObject(), event },
         message: "Ticket fetched successfully",
       });
     } catch (error) {

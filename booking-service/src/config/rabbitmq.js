@@ -10,6 +10,7 @@ class RabbitMQ {
     this.url = url;
     this.connection = null;
     this.channel = null;
+    this.consumerTags = {};
   }
 
   async connect() {
@@ -37,19 +38,42 @@ class RabbitMQ {
   }
 
   async receive(queue, callback) {
-    try {
-      await this.connect();
-      await this.channel.assertQueue(queue);
+    await this.connect();
+    await this.channel.assertQueue(queue);
 
-      this.channel.consume(queue, (msg) => {
-        const response = JSON.parse(msg.content.toString());
-        logger.info(`Received from ${queue}:`, response);
-        callback(response, msg.properties);
-        this.channel.ack(msg);
+    if (!this.consumerTags[queue]) {
+      const listener = (msg) => {
+        if (msg !== null) {
+          const response = JSON.parse(msg.content.toString());
+          logger.info(`Received from ${queue}:`, response);
+          callback(response, msg.properties);
+          this.channel.ack(msg);
+        }
+      };
+
+      const consumerTag = await this.channel.consume(queue, listener, {
+        noAck: false,
       });
-    } catch (error) {
-      logger.error(error.message);
+      this.consumerTags[queue] = consumerTag.consumerTag;
+      logger.info(
+        `Consumer added for ${queue} with tag: ${consumerTag.consumerTag}`,
+      );
+    } else {
+      logger.warn(`Consumer already exists for ${queue}`);
     }
+  }
+
+  async off(queue) {
+    if (this.consumerTags[queue]) {
+      await this.channel.cancel(this.consumerTags[queue]);
+      delete this.consumerTags[queue];
+      logger.info(`Listener removed from ${queue}`);
+    }
+  }
+
+  on(queue, callback) {
+    this.receive(queue, callback);
+    logger.info(`Listener added to ${queue}`);
   }
 }
 

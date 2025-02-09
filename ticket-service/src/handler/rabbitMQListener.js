@@ -3,11 +3,11 @@ import rabbitMQ from "../config/rabbitMQ";
 import ticketsService from "../services/ticketsService";
 
 const rabbitMQListener = () => {
-  rabbitMQ.receive("delete_tickets_queue", async (message) => {
-    const { eventId } = message;
+  rabbitMQ.on("delete_tickets_queue", async (message) => {
+    const eventId = message;
     await ticketsService.deleteListTickets(eventId);
   });
-  rabbitMQ.receive("ticket_request_queue", async (message, properties) => {
+  rabbitMQ.on("ticket_request_queue", async (message, properties) => {
     const eventId = message;
     const tickets = await ticketsService.getAllTicketFromEvent({eventId});
 
@@ -17,7 +17,7 @@ const rabbitMQListener = () => {
       correlationId,
     });
   });
-  rabbitMQ.receive("ticket_detail_request_queue", async (message, properties) => {
+  rabbitMQ.on("ticket_detail_request_queue", async (message, properties) => {
     const ticketId = message;
     const tickets = await ticketsService.getTicketById(ticketId);
 

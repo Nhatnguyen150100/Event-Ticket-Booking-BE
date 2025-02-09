@@ -7,9 +7,7 @@ import rabbitMQ from "../config/rabbitMQ";
 const rabbitMQHandler = {
   sendDeleteTicketsRequest: async (eventId) => {
     try {
-      await rabbitMQ.send("delete_tickets_queue", {
-        eventId,
-      });
+      await rabbitMQ.send("delete_tickets_queue", eventId);
     } catch (error) {
       logger.error(error.message);
       return new BaseErrorResponse({
