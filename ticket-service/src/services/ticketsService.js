@@ -13,6 +13,35 @@ const ticketsService = {
   createTicket: async (data) => {
     try {
       const { eventId, type, price, quantity } = data;
+
+      const existsTicketType = await Ticket.findOne({
+        eventId,
+        type: type ?? "GENERAL",
+      });
+
+      if (existsTicketType) {
+        return new BaseErrorResponse({
+          message: "Ticket type already exists for this event",
+        });
+      }
+
+      const event = await rabbitMQHandler.getEventDetail(eventId);
+      if (!event.data?._id) {
+        return new BaseErrorResponse({ message: "Event not found" });
+      }
+
+      const tickets = await Ticket.find({ eventId });
+
+      const total = tickets.reduce((accumulator, ticket) => {
+        return accumulator + ticket.quantity;
+      }, 0);
+
+      if (total + quantity > event.data.capacity) {
+        return new BaseErrorResponse({
+          message: "Tickets limit exceeded for this event",
+        });
+      }
+
       const newTicket = new Ticket({
         eventId,
         type,
@@ -25,7 +54,7 @@ const ticketsService = {
         message: "Ticket created successfully",
       });
     } catch (error) {
-      logger.error(error.message);
+      logger.error("Error creating ticket:", error);
       return new BaseErrorResponse({ message: "Error creating ticket" });
     }
   },
@@ -40,7 +69,7 @@ const ticketsService = {
         return new BaseErrorResponse({ message: "Event not found" });
       }
       return new BaseSuccessResponse({
-        data: {...ticket.toObject(), event },
+        data: { ...ticket.toObject(), event },
         message: "Ticket fetched successfully",
       });
     } catch (error) {
@@ -79,7 +108,7 @@ const ticketsService = {
       const updatedTicket = await Ticket.findByIdAndUpdate(
         id,
         { $inc: { soldQuantity: soldQuantity } },
-        { new: true }
+        { new: true },
       );
       if (!updatedTicket) {
         return new BaseErrorResponse({ message: "Ticket not found" });

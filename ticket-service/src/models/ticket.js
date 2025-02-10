@@ -17,7 +17,9 @@ const ticketSchema = new Schema(
     quantity: { type: Number, required: true },
     soldQuantity: { type: Number, default: 0 },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  },
 );
 
 const deleteMany = async () => {
