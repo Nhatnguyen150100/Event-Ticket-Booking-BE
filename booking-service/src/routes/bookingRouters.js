@@ -6,8 +6,19 @@ const bookingRouters = express.Router();
 
 bookingRouters.post(
   "/",
-  tokenMiddleware.verifyTokenAdmin,
+  tokenMiddleware.verifyToken,
   bookingController.createBooking,
+);
+bookingRouters.get(
+  "/",
+  tokenMiddleware.verifyToken,
+  bookingController.getListBookingByUserId,
+);
+
+bookingRouters.get(
+  "/:id",
+  tokenMiddleware.verifyToken,
+  bookingController.getBookingDetail,
 );
 
 export default bookingRouters;

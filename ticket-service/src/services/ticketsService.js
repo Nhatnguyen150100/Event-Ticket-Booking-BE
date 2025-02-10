@@ -74,6 +74,25 @@ const ticketsService = {
       return new BaseErrorResponse({ message: "Error updating ticket" });
     }
   },
+  updateSoldQuantityTicket: async (id, soldQuantity) => {
+    try {
+      const updatedTicket = await Ticket.findByIdAndUpdate(
+        id,
+        { $inc: { soldQuantity: soldQuantity } },
+        { new: true }
+      );
+      if (!updatedTicket) {
+        return new BaseErrorResponse({ message: "Ticket not found" });
+      }
+      return new BaseSuccessResponse({
+        data: updatedTicket,
+        message: "Sold quantity ticket updated successfully",
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return new BaseErrorResponse({ message: "Error updating ticket" });
+    }
+  },
   deleteTicket: async (id) => {
     try {
       const deletedEvent = await Ticket.findByIdAndDelete(id);

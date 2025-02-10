@@ -1,3 +1,4 @@
+
 import rabbitMQ from "../config/rabbitMQ";
 import eventService from "../services/eventService";
 
@@ -8,7 +9,7 @@ const rabbitMQListener = () => {
 
     const { correlationId, replyTo } = properties;
 
-    await rabbitMQ.send(replyTo, event, {
+    await rabbitMQ.sendMessage(replyTo, event, {
       correlationId,
     });
   });

@@ -1,5 +1,7 @@
 const { Schema, model, default: mongoose } = require("mongoose");
 const logger = require("../config/winston");
+require('./ticket');
+require('./event');
 
 const bookingSchema = new Schema(
   {

@@ -1,6 +1,8 @@
 "use strict";
 import { config } from "dotenv";
 import logger from "./winston";
+import generateUuid from "../utils/generate-uuid";
+import { BaseErrorResponse } from "./baseResponse";
 config();
 
 const amqp = require("amqplib");
@@ -26,7 +28,7 @@ class RabbitMQ {
     }
   }
 
-  async send(queue, message, options) {
+  async sendMessage(queue, message, options) {
     await this.connect();
     await this.channel.assertQueue(queue);
     logger.info(`Sent to ${queue}`);
@@ -35,6 +37,42 @@ class RabbitMQ {
       Buffer.from(JSON.stringify(message)),
       options,
     );
+  }
+
+  async sendRequestToQueue(queue, message, responseQueue, correlationId) {
+    await this.sendMessage(queue, message, {
+      replyTo: responseQueue,
+      correlationId: correlationId,
+    });
+  }
+
+  async send({queue, message, responseQueue, resolve, reject}) {
+    const uuid = generateUuid();
+    await this.off(responseQueue);
+
+    await this.sendRequestToQueue(queue, message, responseQueue, uuid);
+
+    const timeout = setTimeout(() => {
+      reject(
+        new BaseErrorResponse({
+          message: "Timeout while waiting for response",
+        }),
+      );
+    }, 5000);
+
+    const handleResponse = (response, properties) => {
+      if (properties.correlationId === uuid) {
+        clearTimeout(timeout);
+
+        if (response.status === 200) {
+          resolve(response);
+        } else {
+          reject(response);
+        }
+      }
+    };
+
+    this.on(responseQueue, handleResponse);
   }
 
   async receive(queue, callback) {
@@ -48,6 +86,7 @@ class RabbitMQ {
           logger.info(`Received from ${queue}:`, response);
           callback(response, msg.properties);
           this.channel.ack(msg);
+          // this.connection.close();
         }
       };
 

@@ -1,6 +1,8 @@
 "use strict";
 import { config } from "dotenv";
 import logger from "./winston";
+import generateUuid from "../utils/generate-uuid";
+import { BaseErrorResponse } from "./baseResponse";
 config();
 
 const amqp = require("amqplib");
@@ -48,6 +50,7 @@ class RabbitMQ {
           logger.info(`Received from ${queue}:`, response);
           callback(response, msg.properties);
           this.channel.ack(msg);
+          // this.connection.close();
         }
       };
 

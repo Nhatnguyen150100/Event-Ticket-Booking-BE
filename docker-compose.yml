@@ -45,6 +45,21 @@ services:
       - rabbitmq
       - mongo
 
+  booking-service:
+    build:
+      context: ./booking-service
+      dockerfile: ./Dockerfile
+    ports:
+      - "8084:8084"
+    networks:
+      - my-network
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/db_event_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+      - mongo
+
   event-service:
     build:
       context: ./event-service
@@ -72,6 +87,7 @@ services:
       - AUTH_SERVICE_URL=http://user-service:8081
       - EVENT_SERVICE_URL=http://event-service:8082
       - TICKET_SERVICE_URL=http://ticket-service:8083
+      - BOOKING_SERVICE_URL=http://booking-service:8084
     depends_on:
       - user-service
       - event-service
