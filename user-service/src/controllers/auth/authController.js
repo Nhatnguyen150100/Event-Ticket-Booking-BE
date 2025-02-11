@@ -15,7 +15,7 @@ const authController = {
       res.status(rs.status).json({
         message: rs.message,
         data: { user: rs.data, accessToken: accessToken },
-        status: rs.status
+        status: rs.status,
       });
     } catch (error) {
       logger.error(error.message);
@@ -34,14 +34,24 @@ const authController = {
   },
   me: async (req, res) => {
     try {
-      const {id} = req.user;
+      const { id } = req.user;
       const rs = await authService.getUserById(id);
       res.status(rs.status).json(rs);
     } catch (error) {
       logger.error(error.message);
       res.status(error.status).json(error);
     }
-  }
+  },
+  updateProfile: async (req, res) => {
+    try {
+      const { id } = req.user;
+      const result = await authService.updateProfile(id, req.body);
+      res.status(result.status).json(result);
+    } catch (error) {
+      logger.error(error.message);
+      res.status(error.status).json(error);
+    }
+  },
 };
 
 export default authController;

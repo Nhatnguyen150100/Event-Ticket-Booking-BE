@@ -155,6 +155,41 @@ const authService = {
       }
     });
   },
+  updateProfile: (id, data) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { name, phoneNumber, address } = data;
+        const updatedUser = await User.findByIdAndUpdate(
+          id,
+          {
+            name,
+            phone_number: phoneNumber,
+            address,
+          },
+          {
+            new: true,
+          },
+        );
+        if (!updatedUser) {
+          return resolve(new BaseErrorResponse({ message: "User not found" }));
+        }
+        delete updatedUser._doc.password;
+        return resolve(
+          new BaseSuccessResponse({
+            data: updatedUser._doc,
+            message: "User profile updated successfully",
+          }),
+        );
+      } catch (error) {
+        logger.error(error.message);
+        reject(
+          new BaseErrorResponse({
+            message: error.message,
+          }),
+        );
+      }
+    });
+  },
 };
 
 export default authService;

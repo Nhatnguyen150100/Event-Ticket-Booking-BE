@@ -18,6 +18,8 @@ authRouter.post(
   authController.register,
 );
 
-authRouter.get("/me", tokenMiddleware.verifyToken ,authController.me)
+authRouter.get("/me", tokenMiddleware.verifyToken ,authController.me);
+
+authRouter.put("/", tokenMiddleware.verifyToken ,authController.updateProfile);
 
 export default authRouter;
