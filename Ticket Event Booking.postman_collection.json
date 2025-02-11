@@ -326,6 +326,42 @@
 					"response": []
 				},
 				{
+					"name": "Get ticket detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNzYxODg5OSwiZXhwIjoxNzM3NzA1Mjk5fQ.Q8pEXWyNfO4ZgU72u7TdX-Sg5EbHQZJOSBwN5PcN7stP-PYCS8k63Z5uEhwJ-LS8v7xJPVfpt2aWH0IDXTHZVWPRrLLqhtZYBC9NUnZt7kjASMXA551vdrgOATiuufHgIhnoXGPT3s2epoeynavMIIi3A2mSGCmKZ6Im6WXGB3f4x2Ow1K-6AhXzVgEt8AZJ4NIqF8D3bMz-DAd5vKUMjNVphBxvY-BnRYSreMJtkLB-2rftT_CxUCdXmlfW13MTQe-gjOAiwDoD7T7tBtoamFhUUn7uqVdoIZSfwrTLye13FUqTmfhtwZ5sdY6z-ngZ20yxxhDongZrGeVUyDSSlA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/tickets?eventId=6791f52b5ab075bf6e77bb0d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"tickets"
+							],
+							"query": [
+								{
+									"key": "eventId",
+									"value": "6791f52b5ab075bf6e77bb0d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update ticket",
 					"request": {
 						"auth": {
@@ -370,6 +406,111 @@
 					"request": {
 						"method": "GET",
 						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Booking",
+			"item": [
+				{
+					"name": "Create booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTVkZjAzMjg5ZTNkMjEwNGNjZDIyOCIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzM5MTU0NDgwLCJleHAiOjE3MzkyNDA4ODB9.bKZE0SnJAzftP-BhTMpMSfYKU_aDJqWyHc8iI-Avn4XUTIDCVxy0j6qcPcywxOGkN0V2Ile4z-i3pOrJMEAS5udBKWuAfeWvULx2WxTaejzkoqZIRXkPb629nQ_xFe3ivmaDzgbBBnMwG9AS3Q4Dc7Sz3SabwxlBt76ibghwb-34x3XjgPOHZWqTiL3QCTXPjUjomducupnfvlcpnNAdxAZ92WSMWwufnQ_XgU0zAPWFVyQ83txz9eFs-GwNnYH2SvKohKGmyfptEDay5f7e2i25t-4YBF74tTH8PSJiicvvJz_DynS3SG9M8Nc0G4JnxIqT6TNmSxgFVoENa8h7qw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ticketId\": \"67a5e00845f65660b60f3e3e\",\r\n    \"quantity\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/bookings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get list bookings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTVkZjAzMjg5ZTNkMjEwNGNjZDIyOCIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzM5MTU0NDgwLCJleHAiOjE3MzkyNDA4ODB9.bKZE0SnJAzftP-BhTMpMSfYKU_aDJqWyHc8iI-Avn4XUTIDCVxy0j6qcPcywxOGkN0V2Ile4z-i3pOrJMEAS5udBKWuAfeWvULx2WxTaejzkoqZIRXkPb629nQ_xFe3ivmaDzgbBBnMwG9AS3Q4Dc7Sz3SabwxlBt76ibghwb-34x3XjgPOHZWqTiL3QCTXPjUjomducupnfvlcpnNAdxAZ92WSMWwufnQ_XgU0zAPWFVyQ83txz9eFs-GwNnYH2SvKohKGmyfptEDay5f7e2i25t-4YBF74tTH8PSJiicvvJz_DynS3SG9M8Nc0G4JnxIqT6TNmSxgFVoENa8h7qw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/bookings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get booking detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTVkZjAzMjg5ZTNkMjEwNGNjZDIyOCIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzM5MTU0NDgwLCJleHAiOjE3MzkyNDA4ODB9.bKZE0SnJAzftP-BhTMpMSfYKU_aDJqWyHc8iI-Avn4XUTIDCVxy0j6qcPcywxOGkN0V2Ile4z-i3pOrJMEAS5udBKWuAfeWvULx2WxTaejzkoqZIRXkPb629nQ_xFe3ivmaDzgbBBnMwG9AS3Q4Dc7Sz3SabwxlBt76ibghwb-34x3XjgPOHZWqTiL3QCTXPjUjomducupnfvlcpnNAdxAZ92WSMWwufnQ_XgU0zAPWFVyQ83txz9eFs-GwNnYH2SvKohKGmyfptEDay5f7e2i25t-4YBF74tTH8PSJiicvvJz_DynS3SG9M8Nc0G4JnxIqT6TNmSxgFVoENa8h7qw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/bookings/67a977740a99abb833d23379",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"bookings",
+								"67a977740a99abb833d23379"
+							]
+						}
 					},
 					"response": []
 				}

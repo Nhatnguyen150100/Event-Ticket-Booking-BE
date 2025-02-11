@@ -3,6 +3,7 @@ import express from "express";
 import authController from "../controllers/auth/authController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import passportController from "../controllers/auth/passportController.js";
+import tokenMiddleware from "../middleware/tokenMiddleware.js";
 const authRouter = express.Router();
 
 authRouter.post(
@@ -16,5 +17,7 @@ authRouter.post(
   authMiddleware.checkUserExist,
   authController.register,
 );
+
+authRouter.get("/me", tokenMiddleware.verifyToken ,authController.me)
 
 export default authRouter;

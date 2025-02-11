@@ -32,6 +32,16 @@ const authController = {
       res.status(error.status).json(error);
     }
   },
+  me: async (req, res) => {
+    try {
+      const {id} = req.user;
+      const rs = await authService.getUserById(id);
+      res.status(rs.status).json(rs);
+    } catch (error) {
+      logger.error(error.message);
+      res.status(error.status).json(error);
+    }
+  }
 };
 
 export default authController;
