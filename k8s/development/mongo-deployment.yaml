@@ -1,8 +1,8 @@
-# mongo-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mongo
+  namespace: event-booking
 spec:
   replicas: 1
   selector:
@@ -24,15 +24,4 @@ spec:
       volumes:
       - name: mongo-data
         persistentVolumeClaim:
-          claimName: mongo-data
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongo
-spec:
-  ports:
-  - port: 27017
-    targetPort: 27017
-  selector:
-    app: mongo
+          claimName: mongo-pvc
