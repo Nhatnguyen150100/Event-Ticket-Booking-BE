@@ -46,7 +46,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"admin@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
+							"raw": "{\r\n    \"email\": \"user1@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -333,7 +333,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNzYxODg5OSwiZXhwIjoxNzM3NzA1Mjk5fQ.Q8pEXWyNfO4ZgU72u7TdX-Sg5EbHQZJOSBwN5PcN7stP-PYCS8k63Z5uEhwJ-LS8v7xJPVfpt2aWH0IDXTHZVWPRrLLqhtZYBC9NUnZt7kjASMXA551vdrgOATiuufHgIhnoXGPT3s2epoeynavMIIi3A2mSGCmKZ6Im6WXGB3f4x2Ow1K-6AhXzVgEt8AZJ4NIqF8D3bMz-DAd5vKUMjNVphBxvY-BnRYSreMJtkLB-2rftT_CxUCdXmlfW13MTQe-gjOAiwDoD7T7tBtoamFhUUn7uqVdoIZSfwrTLye13FUqTmfhtwZ5sdY6z-ngZ20yxxhDongZrGeVUyDSSlA",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM0MjcwYjNhNTMxNzY0MGY4NWVlMyIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzM5MzQyNjQ0LCJleHAiOjE3Mzk0MjkwNDR9.hGTlt-uN0j18eZRjFxuvb_lPDiDlwa1WXJ1E-fXmDYDhzbv4yWPhZ3uAZBnla6FaSvOfrBMcWDoMC7k41wXCxCxE8OLi3ZGsQP4tUjG6hWGJuIzmUHUFJUjmTqCSzBCyyC6IXOc0KgqeqXVoBLKCKzTVvMtWAvhjOkr1-zn86qUBoIRbSWwkIYDcqk3xV6ysHJUvK0rdWgCy9Js32FIB5u0iXGR1NDGjSlKZFclrode4RtKUpTnLHrCu9kQb-d0rGhf3qC5Ejfan8sYrC1Uk7RhUYT73Xw_-KFHXBikAXRPG7Janw8dk0wLMo8aWax34B60w3Ex8A7G6qcsHd-uBOA",
 									"type": "string"
 								}
 							]
@@ -341,7 +341,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/v1/tickets?eventId=6791f52b5ab075bf6e77bb0d",
+							"raw": "http://localhost:8080/v1/tickets/67ac43409d6666bd9cb71c5d",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -349,13 +349,8 @@
 							"port": "8080",
 							"path": [
 								"v1",
-								"tickets"
-							],
-							"query": [
-								{
-									"key": "eventId",
-									"value": "6791f52b5ab075bf6e77bb0d"
-								}
+								"tickets",
+								"67ac43409d6666bd9cb71c5d"
 							]
 						}
 					},
@@ -404,8 +399,31 @@
 				{
 					"name": "Delete ticket",
 					"request": {
-						"method": "GET",
-						"header": []
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNzYxODg5OSwiZXhwIjoxNzM3NzA1Mjk5fQ.Q8pEXWyNfO4ZgU72u7TdX-Sg5EbHQZJOSBwN5PcN7stP-PYCS8k63Z5uEhwJ-LS8v7xJPVfpt2aWH0IDXTHZVWPRrLLqhtZYBC9NUnZt7kjASMXA551vdrgOATiuufHgIhnoXGPT3s2epoeynavMIIi3A2mSGCmKZ6Im6WXGB3f4x2Ow1K-6AhXzVgEt8AZJ4NIqF8D3bMz-DAd5vKUMjNVphBxvY-BnRYSreMJtkLB-2rftT_CxUCdXmlfW13MTQe-gjOAiwDoD7T7tBtoamFhUUn7uqVdoIZSfwrTLye13FUqTmfhtwZ5sdY6z-ngZ20yxxhDongZrGeVUyDSSlA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/tickets/6791fff3ea8d144b0ae4aeca",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"tickets",
+								"6791fff3ea8d144b0ae4aeca"
+							]
+						}
 					},
 					"response": []
 				}
@@ -414,45 +432,6 @@
 		{
 			"name": "Booking",
 			"item": [
-				{
-					"name": "Create booking",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTVkZjAzMjg5ZTNkMjEwNGNjZDIyOCIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzM5MTU0NDgwLCJleHAiOjE3MzkyNDA4ODB9.bKZE0SnJAzftP-BhTMpMSfYKU_aDJqWyHc8iI-Avn4XUTIDCVxy0j6qcPcywxOGkN0V2Ile4z-i3pOrJMEAS5udBKWuAfeWvULx2WxTaejzkoqZIRXkPb629nQ_xFe3ivmaDzgbBBnMwG9AS3Q4Dc7Sz3SabwxlBt76ibghwb-34x3XjgPOHZWqTiL3QCTXPjUjomducupnfvlcpnNAdxAZ92WSMWwufnQ_XgU0zAPWFVyQ83txz9eFs-GwNnYH2SvKohKGmyfptEDay5f7e2i25t-4YBF74tTH8PSJiicvvJz_DynS3SG9M8Nc0G4JnxIqT6TNmSxgFVoENa8h7qw",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"ticketId\": \"67a5e00845f65660b60f3e3e\",\r\n    \"quantity\": 3\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/v1/bookings",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"v1",
-								"bookings"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "Get list bookings",
 					"request": {
@@ -509,6 +488,50 @@
 								"v1",
 								"bookings",
 								"67a977740a99abb833d23379"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "Create payment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTVkZjAzMjg5ZTNkMjEwNGNjZDIyNyIsImVtYWlsIjoidXNlcjFAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MzkzMzE2MzksImV4cCI6MTczOTQxODAzOX0.RTYEk602v3nifDHelZPMzK-DfStPn_nZNlWfVpDCS3sCMtyGQJD_bTh60116q5nd1Uw5A0rdiUYCIJrFLxD7v_-NjyM69dV2joi5fo56atyZqiC1sOolHeslJrtyHp_hHrq4CD-jCaB_qG8HMJLG4N5mfjzuGg_ZWFipzqL_COSGAW6-lWeNZ9LhZfKU_SK_5lC8SsyLyni-R9XF97Cktp9u5qrYQxmTSay6f4Wh-v4Ey6cErgI_gPOqAMTopnNJN87zJpwBDgtOrJqvWDWGM7qfY-nOfrGXpIWeRlIU0Lwiq_yBxW-MoGhG7QIpA6t7OLGZIjiInh3M9aOrwNvOOA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ticketId\": \"67a5e00845f65660b60f3e3e\",\r\n    \"quantity\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/payments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"payments"
 							]
 						}
 					},
