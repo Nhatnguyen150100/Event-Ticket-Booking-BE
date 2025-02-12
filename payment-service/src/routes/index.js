@@ -1,8 +1,9 @@
 "use strict";
 
 import imagesRouter from "./images";
+import paymentRouters from "./paymentRouters";
 
-const prefixURL = "/api/payment";
+const prefixURL = "/api/payments";
 
 const setUpRouters = (app) => {
   app.use(`${prefixURL}/images`, imagesRouter);

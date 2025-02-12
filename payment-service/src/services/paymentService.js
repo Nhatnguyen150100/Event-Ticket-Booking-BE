@@ -1,11 +1,11 @@
 "use strict";
-import db from "../models";
 import * as queryString from "qs";
-import { BaseErrorResponse, BaseSuccessResponse } from "../config/baseReponse";
+import { BaseErrorResponse, BaseSuccessResponse } from "../config/baseResponse";
 import logger from "../config/winston";
 import bcrypt from "bcrypt";
 import dayjs from "dayjs";
 import generateSignature from "../utils/generate-signature";
+import rabbitMQHandler from "../handler/rabbitMQHandler";
 
 function sortObject(obj) {
   const sorted = {};
@@ -26,12 +26,10 @@ function sortObject(obj) {
 }
 
 const paymentService = {
-  createPayment: (userId, amount) => {
+  createPayment: (id, data) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const user = await db.User.findOne({
-          where: { id: userId },
-        });
+        const { amount, ticketId, quantity } = data;
         const secretToken = bcrypt.hash(process.env.VN_PAY_HASH_KEY, 10);
         const merchantId = process.env.VN_PAY_MERCHANT_ID;
         const hashSecret = process.env.VN_PAY_HASH_SECRET;
@@ -48,9 +46,9 @@ const paymentService = {
           vnp_CurrCode: "VND",
           vnp_IpAddr: "127.0.0.1",
           vnp_Locale: "vn",
-          vnp_OrderInfo: user.id,
+          vnp_OrderInfo: id,
           vnp_OrderType: "billpayment",
-          vnp_ReturnUrl: `${process.env.BASE_URL_SERVER}/v1/payment/update-user-amount?secretToken=${secretToken}`,
+          vnp_ReturnUrl: `${process.env.BASE_URL_SERVER}/v1/payments/create-booking?secretToken=${secretToken}&ticketId=${ticketId}&quantity=${quantity}`,
           vnp_TxnRef: dayjs(date).format("DDHHmmss"),
         };
 
@@ -65,6 +63,41 @@ const paymentService = {
           new BaseSuccessResponse({
             data: paymentUrl,
             message: "Tạo thông tin thanh toán thành công",
+          }),
+        );
+      } catch (error) {
+        logger.error(error.message);
+        return reject(
+          new BaseErrorResponse({
+            message: error.message,
+          }),
+        );
+      }
+    });
+  },
+  createBooking: (userId, ticketId, quantity, secretToken) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const validHashKey = bcrypt.compare(
+          secretToken,
+          process.env.VN_PAY_HASH_KEY
+        );
+        if (!validHashKey) {
+          return reject(
+            new BaseErrorResponse({
+              message: "Mã xác thực không chính xác",
+            })
+          );
+        }
+        const booking = await rabbitMQHandler.createBooking({
+          userId,
+          ticketId,
+          quantity,
+        })
+        return resolve(
+          new BaseSuccessResponse({
+            data: booking,
+            message: "Cập nhật tài khoản người dùng thành công",
           })
         );
       } catch (error) {
@@ -76,7 +109,7 @@ const paymentService = {
         );
       }
     });
-  }
+  },
 };
 
 export default paymentService;

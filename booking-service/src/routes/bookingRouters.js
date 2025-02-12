@@ -4,11 +4,6 @@ import tokenMiddleware from "../middleware/tokenMiddleware.js";
 import bookingController from "../controllers/bookingController.js";
 const bookingRouters = express.Router();
 
-bookingRouters.post(
-  "/",
-  tokenMiddleware.verifyToken,
-  bookingController.createBooking,
-);
 bookingRouters.get(
   "/",
   tokenMiddleware.verifyToken,

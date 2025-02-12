@@ -3,18 +3,6 @@
 import bookingService from "../services/bookingService";
 
 const bookingController = {
-  createBooking: async (req, res) => {
-    try {
-      const user = req.user;
-      const result = await bookingService.createBooking({
-        userId: user.id,
-        ...req.body,
-      });
-      res.status(result.status).json(result);
-    } catch (error) {
-      res.status(error.status).json(error);
-    }
-  },
   getListBookingByUserId: async (req, res) => {
     try {
       const user = req.user;

@@ -40,6 +40,13 @@ const DEFINE_ROUTERS = [
     },
   },
   {
+    pathName: buildPathName("payments"),
+    target: process.env.PAYMENT_SERVICE_URL,
+    pathRewrite: {
+      "^/": "/api/payments/",
+    },
+  },
+  {
     pathName: buildPathName("events-static"),
     target: process.env.EVENT_SERVICE_URL,
     pathRewrite: {

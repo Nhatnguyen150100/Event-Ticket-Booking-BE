@@ -5,14 +5,15 @@ import rabbitMQ from "../config/rabbitMQ";
 import logger from "../config/winston";
 
 const rabbitMQHandler = {
-  getEventDetail: (eventId) => {
+  createBooking: ({ userId, ticketId, quantity }) => {
     return new Promise(async (resolve, reject) => {
-      const queue = "event_detail_request_queue";
-      const responseQueue = "event_detail_response_queue";
+      const queue = "create_booking_request_queue";
+      const responseQueue = "create_booking_response_queue";
+
       try {
         await rabbitMQ.send({
           queue,
-          message: eventId,
+          message: { userId, ticketId, quantity },
           responseQueue,
           resolve,
           reject,
