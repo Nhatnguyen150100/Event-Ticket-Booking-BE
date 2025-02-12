@@ -33,8 +33,8 @@ const paymentService = {
         const ticketDetail = await rabbitMQHandler.getTicketFromTicketId(
           ticketId,
         );
-        if(quantity > ticketDetail?.data.soldQuantity) {
-          return new BaseErrorResponse({ message: "Not enough quantity" });
+        if(quantity > (ticketDetail?.data.quantity - ticketDetail?.data.soldQuantity)) {
+          return reject(new BaseErrorResponse({ message: "Not enough quantity" }));
         }
         const amount = ticketDetail?.data.price * quantity * 100;
         const secretToken = bcrypt.hash(process.env.VN_PAY_HASH_KEY, 10);
