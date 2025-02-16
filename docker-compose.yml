@@ -14,6 +14,11 @@ services:
       - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
       - my-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   user-service:
     build:
@@ -27,8 +32,10 @@ services:
       - MONGO_URI=mongodb://mongo:27017/db_event_booking
       - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
     depends_on:
-      - rabbitmq
-      - mongo
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
 
   ticket-service:
     build:
@@ -42,8 +49,10 @@ services:
       - MONGO_URI=mongodb://mongo:27017/db_event_booking
       - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
     depends_on:
-      - rabbitmq
-      - mongo
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
 
   booking-service:
     build:
@@ -57,8 +66,10 @@ services:
       - MONGO_URI=mongodb://mongo:27017/db_event_booking
       - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
     depends_on:
-      - rabbitmq
-      - mongo
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
 
   event-service:
     build:
@@ -72,8 +83,10 @@ services:
       - MONGO_URI=mongodb://mongo:27017/db_event_booking
       - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
     depends_on:
-      - rabbitmq
-      - mongo
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
 
   payment-service:
     build:
@@ -87,8 +100,10 @@ services:
       - MONGO_URI=mongodb://mongo:27017/db_event_booking
       - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
     depends_on:
-      - rabbitmq
-      - mongo
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
 
   api-gateway:
     build:
@@ -105,10 +120,18 @@ services:
       - BOOKING_SERVICE_URL=http://booking-service:8084
       - PAYMENT_SERVICE_URL=http://payment-service:8085
     depends_on:
-      - user-service
-      - event-service
-      - ticket-service
-      - rabbitmq
+      user-service:
+        condition: service_started
+      event-service:
+        condition: service_started
+      ticket-service:
+        condition: service_started
+      booking-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   mongo:
     image: mongo:latest
@@ -118,6 +141,11 @@ services:
       - my-network
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
 
 networks:
   my-network:
