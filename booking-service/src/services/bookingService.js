@@ -50,7 +50,7 @@ const bookingService = {
   },
   getListBookingByUserId: async ({ userId, page = 1, limit = 10 }) => {
     try {
-      let query = {
+      const query = {
         userId,
       };
 
