@@ -105,11 +105,9 @@ const ticketsService = {
   },
   updateSoldQuantityTicket: async (id, soldQuantity) => {
     try {
-      const updatedTicket = await Ticket.findByIdAndUpdate(
-        id,
-        { $inc: { soldQuantity: soldQuantity } },
-        { new: true },
-      );
+      const updatedTicket = await Ticket.findByIdAndUpdate(id, {
+        $inc: { soldQuantity: soldQuantity },
+      });
       if (!updatedTicket) {
         return new BaseErrorResponse({ message: "Ticket not found" });
       }

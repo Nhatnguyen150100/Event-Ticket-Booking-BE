@@ -8,8 +8,8 @@ const rabbitMQListener = () => {
     await ticketsService.deleteListTickets(eventId);
   });
   rabbitMQ.on("update_tickets_queue", async (message) => {
-    const { eventId, quantity } = message;
-    await ticketsService.updateSoldQuantityTicket(eventId, quantity);
+    const { eventId, soldQuantity } = message;
+    await ticketsService.updateSoldQuantityTicket(eventId, soldQuantity);
   });
   rabbitMQ.on("ticket_request_queue", async (message, properties) => {
     const eventId = message;

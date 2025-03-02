@@ -22,10 +22,15 @@ const bookingService = {
       if (!ticketDetail?.data?._id) {
         return new BaseErrorResponse({ message: "Invalid ticketId" });
       }
-      
-      if(quantity > ticketDetail.data.quantity) {
-        return new BaseErrorResponse({ message: "Not enough quantity available" });
+
+      if (
+        quantity >
+        ticketDetail?.data.quantity - ticketDetail?.data.soldQuantity
+      ) {
+        return new BaseErrorResponse({ message: "Not enough quantity" });
       }
+
+      await rabbitMQHandler.updateQuantityTicket(ticketId, quantity);
 
       const booking = new Booking({
         userId,
