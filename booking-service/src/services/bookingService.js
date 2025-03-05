@@ -1,4 +1,5 @@
 "use strict";
+import mongoose from "mongoose";
 import {
   BaseErrorResponse,
   BaseResponseList,
@@ -6,41 +7,49 @@ import {
 } from "../config/baseResponse";
 import { DEFINE_STATUS_RESPONSE } from "../config/statusResponse";
 import logger from "../config/winston";
-import rabbitMQHandler from "../handler/rabbitMQHandler";
 import { Booking } from "../models/booking";
+import { Outbox } from "../models/outbox";
+import rabbitMQHandler from "../handler/rabbitMQHandler";
 
 const bookingService = {
   createBooking: async (data) => {
+    const session = await mongoose.startSession();
     try {
       const { userId, ticketId, quantity } = data;
       if (!quantity) {
         return new BaseErrorResponse({ message: "Quantity must be provided" });
       }
+
       const ticketDetail = await rabbitMQHandler.getTicketFromTicketId(
         ticketId,
       );
-      if (!ticketDetail?.data?._id) {
-        return new BaseErrorResponse({ message: "Invalid ticketId" });
-      }
+      console.log("🚀 ~ createBooking: ~ ticketDetail:", ticketDetail)
 
-      if (
-        quantity >
-        ticketDetail?.data.quantity - ticketDetail?.data.soldQuantity
-      ) {
-        return new BaseErrorResponse({ message: "Not enough quantity" });
-      }
-
-      await rabbitMQHandler.updateQuantityTicket(ticketId, quantity);
+      session.startTransaction();
 
       const booking = new Booking({
         userId,
         ticketId,
-        eventId: ticketDetail.data.eventId,
+        eventId: ticketDetail.eventId,
         quantity,
-        totalPrice: ticketDetail.data.price * quantity,
+        totalPrice: ticketDetail.price * quantity,
       });
 
-      await booking.save();
+      await booking.save({ session });
+
+      const outbox = new Outbox({
+        type: "TICKET_UPDATE",
+        payload: {
+          ticketId: ticketId,
+          quantity: quantity,
+          operation: "DECREMENT",
+        },
+        status: "PENDING",
+      });
+
+      await outbox.save({ session });
+
+      await session.commitTransaction();
 
       return new BaseSuccessResponse({
         data: booking,
@@ -51,6 +60,8 @@ const bookingService = {
       return new BaseErrorResponse({
         message: error?.message ?? "Created booking failed",
       });
+    } finally {
+      session.endSession();
     }
   },
   getListBookingByUserId: async ({ userId, page = 1, limit = 10 }) => {

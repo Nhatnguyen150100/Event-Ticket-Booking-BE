@@ -117,6 +117,77 @@ const paymentService = {
       }
     });
   },
+  refundPayment: (transactionData) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const {
+          transactionId,
+          amount,
+          transactionDate,
+          userId,
+          bookingId
+        } = transactionData;
+
+        const merchantId = process.env.VN_PAY_MERCHANT_ID;
+        const hashSecret = process.env.VN_PAY_HASH_SECRET;
+        const vnPayRefundUrl = process.env.VN_PAY_REFUND_URL;
+        const createDate = dayjs().format("YYYYMMDDHHmmss");
+        const ipAddr = "127.0.0.1";
+
+        const vnpParams = {
+          vnp_RequestId: `REFUND${dayjs().format('HHmmssSSS')}`,
+          vnp_Version: "2.1.0",
+          vnp_Command: "refund",
+          vnp_TmnCode: merchantId,
+          vnp_TransactionId: transactionId,
+          vnp_Amount: Math.round(amount * 100),
+          vnp_TransactionDate: transactionDate,
+          vnp_CreateDate: createDate,
+          vnp_IpAddr: ipAddr,
+          vnp_OrderInfo: `Refund for booking ${bookingId}`,
+          vnp_TransactionType: "02",
+        };
+
+        const booking = await rabbitMQHandler.getBookingDetails(bookingId);
+        if (!booking || booking.userId !== userId) {
+          return reject(new BaseErrorResponse({ 
+            message: "Booking không tồn tại hoặc không hợp lệ" 
+          }));
+        }
+
+        const sortedParams = sortObject(vnpParams);
+        const signData = queryString.stringify(sortedParams, { encode: false });
+        const signature = generateSignature(signData, hashSecret);
+
+        const payload = {
+          ...sortedParams,
+          vnp_SecureHash: signature
+        };
+
+        const response = await axios.post(vnPayRefundUrl, payload, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+
+        if (response.data.vnp_ResponseCode === "00") {
+          resolve(new BaseSuccessResponse({
+            data: response.data,
+            message: "Yêu cầu hoàn tiền thành công"
+          }));
+        } else {
+          reject(new BaseErrorResponse({
+            message: `Hoàn tiền thất bại: ${response.data.vnp_Message}`
+          }));
+        }
+      } catch (error) {
+        logger.error(`Refund Error: ${error.message}`);
+        reject(new BaseErrorResponse({
+          message: error.response?.data?.message || "Lỗi hệ thống khi xử lý hoàn tiền"
+        }));
+      }
+    });
+  }
 };
 
 export default paymentService;

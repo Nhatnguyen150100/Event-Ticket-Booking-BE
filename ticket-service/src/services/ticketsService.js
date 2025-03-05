@@ -58,18 +58,24 @@ const ticketsService = {
       return new BaseErrorResponse({ message: "Error creating ticket" });
     }
   },
-  getTicketById: async (id) => {
+  getTicketById: async (id, isGetEventInfo = true) => {
     try {
       const ticket = await Ticket.findById(id);
       if (!ticket) {
         return new BaseErrorResponse({ message: "Ticket not found" });
       }
-      const event = await rabbitMQHandler.getEventDetail(ticket.eventId);
-      if (!event) {
-        return new BaseErrorResponse({ message: "Event not found" });
+      if (isGetEventInfo) {
+        const event = await rabbitMQHandler.getEventDetail(ticket.eventId);
+        if (!event) {
+          return new BaseErrorResponse({ message: "Event not found" });
+        }
+        return new BaseSuccessResponse({
+          data: { ...ticket.toObject(), event },
+          message: "Ticket fetched successfully",
+        });
       }
       return new BaseSuccessResponse({
-        data: { ...ticket.toObject(), event },
+        data: ticket,
         message: "Ticket fetched successfully",
       });
     } catch (error) {
@@ -103,10 +109,13 @@ const ticketsService = {
       return new BaseErrorResponse({ message: "Error updating ticket" });
     }
   },
-  updateSoldQuantityTicket: async (id, soldQuantity) => {
+  updateSoldQuantityTicket: async (id, soldQuantity, operation) => {
     try {
       const updatedTicket = await Ticket.findByIdAndUpdate(id, {
-        $inc: { soldQuantity: soldQuantity },
+        $inc: {
+          soldQuantity:
+            operation === "INCREMENT" ? soldQuantity : -soldQuantity,
+        },
       });
       if (!updatedTicket) {
         return new BaseErrorResponse({ message: "Ticket not found" });

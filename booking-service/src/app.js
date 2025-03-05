@@ -14,6 +14,7 @@ import connectDB from "./config/database.js";
 import morgan from "morgan";
 import setUpRouters from "./routes/index.js";
 import rabbitMQListener from "./handler/rabbitMQListener.js";
+import workers from "./workers/workers.js";
 
 const logger = require("./config/winston.js");
 
@@ -22,6 +23,8 @@ dotenv.config();
 connectDB();
 rabbitMQListener();
 const app = express();
+
+workers();
 
 app.use(
   cors({
