@@ -111,18 +111,28 @@ const ticketsService = {
   },
   updateSoldQuantityTicket: async (id, soldQuantity, operation) => {
     try {
-      const updatedTicket = await Ticket.findByIdAndUpdate(id, {
-        $inc: {
-          soldQuantity:
-            operation === "INCREMENT" ? soldQuantity : -soldQuantity,
+      if (typeof soldQuantity !== "number" || soldQuantity <= 0) {
+        return new BaseErrorResponse({ message: "Invalid quantity value" });
+      }
+
+      const updatedTicket = await Ticket.findByIdAndUpdate(
+        id,
+        {
+          $inc: {
+            soldQuantity:
+              operation === "INCREMENT" ? soldQuantity : -soldQuantity,
+          },
         },
-      });
+        { new: true },
+      );
+
       if (!updatedTicket) {
         return new BaseErrorResponse({ message: "Ticket not found" });
       }
+
       return new BaseSuccessResponse({
         data: updatedTicket,
-        message: "Sold quantity ticket updated successfully",
+        message: "Sold quantity updated successfully",
       });
     } catch (error) {
       logger.error(error.message);

@@ -10,17 +10,15 @@ import { join } from "path";
 const dotenv = require("dotenv");
 dotenv.config();
 
-import connectDB from "./config/database.js";
 import morgan from "morgan";
-import setUpRouters from "./routes/index.js";
-import rabbitMQListener from "./handler/rabbitMQListener.js";
+import workers from "./workers/workers.js";
 
+import connectDB from "./config/database.js";
 const logger = require("./config/winston.js");
 
 dotenv.config();
 
 connectDB();
-rabbitMQListener();
 const app = express();
 
 app.use(
@@ -32,13 +30,13 @@ app.use(
     optionsSuccessStatus: 200,
     allowedHeaders: ["Content-Type", "Authorization", "token"],
     exposedHeaders: ["X-Total-Count", "token"],
-  }),
+  })
 );
 
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
-  }),
+  })
 );
 
 app.use(bodyParser.json({ limit: "50mb" }));
@@ -62,12 +60,12 @@ app.use((req, res, next) => {
 });
 
 /**
- * @toto router setup
+ * @todo Workers setup
  */
-setUpRouters(app);
+workers();
 
 app.listen(process.env.PORT || 3000, () => {
-  logger.info("Server listening on port: " + (process.env.PORT || 3000));
+  logger.info("Workers Server listening on port: " + (process.env.PORT || 3000));
 });
 
 export default app;

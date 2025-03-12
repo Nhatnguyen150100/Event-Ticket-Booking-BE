@@ -2,6 +2,8 @@ import logger from "../config/winston";
 import rabbitMQHandler from "../handler/rabbitMQHandler";
 import { Outbox } from "../models/outbox";
 
+let interval = 5000;
+
 const processOutbox = async () => {
   try {
     const messages = await Outbox.find({ status: "PENDING" })
@@ -10,6 +12,8 @@ const processOutbox = async () => {
 
     for (const msg of messages) {
       try {
+        const latency = Date.now() - msg.createdAt.getTime();
+        logger.info(`Processing latency: ${latency}ms`);
         await rabbitMQHandler.updateQuantityTicket(
           msg.payload.ticketId,
           msg.payload.quantity,
@@ -21,7 +25,7 @@ const processOutbox = async () => {
         await msg.save();
       } catch (err) {
         logger.error(`Outbox processing failed: ${err.message}`);
-        
+
         msg.retries += 1;
         if (msg.retries > 5) {
           msg.status = "FAILED";
@@ -35,12 +39,20 @@ const processOutbox = async () => {
   }
 };
 
+const adjustInterval = (pendingCount) => {
+  if (pendingCount > 1000) interval = 1000;
+  else if (pendingCount > 500) interval = 2000;
+  else interval = 5000;
+};
+
+const process = async () => {
+  const pendingCount = await Outbox.countDocuments({ status: "PENDING" });
+  adjustInterval(pendingCount);
+  await processOutbox();
+  setTimeout(process, interval);
+};
+
 const workers = () => {
-  const process = async () => {
-    await processOutbox();
-    setTimeout(process, 5000);
-  };
-  
   process();
 };
 

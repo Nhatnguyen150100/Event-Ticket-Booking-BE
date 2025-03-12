@@ -8,8 +8,12 @@ const rabbitMQListener = () => {
     await ticketsService.deleteListTickets(eventId);
   });
   rabbitMQ.on("update_tickets_queue", async (message) => {
-    const { eventId, soldQuantity } = message;
-    await ticketsService.updateSoldQuantityTicket(eventId, soldQuantity);
+    const { ticketId, soldQuantity, operation } = message;
+    await ticketsService.updateSoldQuantityTicket(
+      ticketId,
+      parseInt(soldQuantity),
+      operation,
+    );
   });
   rabbitMQ.on("ticket_request_queue", async (message, properties) => {
     const eventId = message;
@@ -23,7 +27,7 @@ const rabbitMQListener = () => {
   });
   rabbitMQ.on("ticket_detail_request_queue", async (message, properties) => {
     const ticketId = message;
-    const ticket = await ticketsService.getTicketById(ticketId);
+    const ticket = await ticketsService.getTicketById(ticketId, false);
 
     const { correlationId, replyTo } = properties;
 

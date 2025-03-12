@@ -15,6 +15,15 @@ const bookingController = {
       res.status(error.status).json(error);
     }
   },
+  createBooking: async (req, res) => {
+    try {
+      const user = req.user;
+      const result = await bookingService.createRequestBooking(user.id, req.body);
+      res.status(result.status).json(result);
+    } catch (error) {
+      res.status(error.status).json(error);
+    }
+  },
   getBookingDetail: async (req, res) => {
     try {
       const { id } = req.params;

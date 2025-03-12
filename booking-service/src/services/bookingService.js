@@ -1,5 +1,4 @@
 "use strict";
-import mongoose from "mongoose";
 import {
   BaseErrorResponse,
   BaseResponseList,
@@ -13,19 +12,15 @@ import rabbitMQHandler from "../handler/rabbitMQHandler";
 
 const bookingService = {
   createBooking: async (data) => {
-    const session = await mongoose.startSession();
     try {
-      const { userId, ticketId, quantity } = data;
+      const { userId, ticketId, quantity: castQuantity } = data;
+      const quantity = parseInt(castQuantity);
       if (!quantity) {
         return new BaseErrorResponse({ message: "Quantity must be provided" });
       }
 
-      const ticketDetail = await rabbitMQHandler.getTicketFromTicketId(
-        ticketId,
-      );
-      console.log("🚀 ~ createBooking: ~ ticketDetail:", ticketDetail)
-
-      session.startTransaction();
+      const { data: ticketDetail } =
+        await rabbitMQHandler.getTicketFromTicketId(ticketId);
 
       const booking = new Booking({
         userId,
@@ -35,21 +30,19 @@ const bookingService = {
         totalPrice: ticketDetail.price * quantity,
       });
 
-      await booking.save({ session });
+      await booking.save();
 
       const outbox = new Outbox({
         type: "TICKET_UPDATE",
         payload: {
           ticketId: ticketId,
           quantity: quantity,
-          operation: "DECREMENT",
+          operation: "INCREMENT",
         },
         status: "PENDING",
       });
 
-      await outbox.save({ session });
-
-      await session.commitTransaction();
+      await outbox.save();
 
       return new BaseSuccessResponse({
         data: booking,
@@ -60,8 +53,40 @@ const bookingService = {
       return new BaseErrorResponse({
         message: error?.message ?? "Created booking failed",
       });
-    } finally {
-      session.endSession();
+    }
+  },
+  createRequestBooking: async (userId, data) => {
+    try {
+      const { ticketId, quantity } = data;
+      if (!quantity) {
+        return new BaseErrorResponse({ message: "Quantity must be provided" });
+      }
+      const ticketDetail = await rabbitMQHandler.getTicketFromTicketId(
+        ticketId,
+      );
+      if (
+        quantity >
+        ticketDetail?.data.quantity - ticketDetail?.data.soldQuantity
+      ) {
+        return reject(
+          new BaseErrorResponse({ message: "Not enough quantity" }),
+        );
+      }
+      const amount = ticketDetail?.data.price * quantity * 100;
+
+      const payment = await rabbitMQHandler.createPaymentBooking({
+        userId,
+        ticketId,
+        quantity,
+        amount,
+      });
+      return new BaseSuccessResponse({
+        data: payment.data,
+        message: "Payment request sent successfully",
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return new BaseErrorResponse({ message: "Error fetching booking" });
     }
   },
   getListBookingByUserId: async ({ userId, page = 1, limit = 10 }) => {

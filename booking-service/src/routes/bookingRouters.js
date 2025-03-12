@@ -16,4 +16,10 @@ bookingRouters.get(
   bookingController.getBookingDetail,
 );
 
+bookingRouters.post(
+  "/",
+  tokenMiddleware.verifyToken,
+  bookingController.createBooking,
+);
+
 export default bookingRouters;

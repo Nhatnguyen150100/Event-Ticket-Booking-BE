@@ -55,6 +55,25 @@ services:
       redis:
         condition: service_healthy
 
+  workers-service:
+    build:
+      context: ./workers-service
+      dockerfile: ./Dockerfile
+    ports:
+      - "8086:8086"
+    networks:
+      - my-network
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/db_event_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   ticket-service:
     build:
       context: ./ticket-service

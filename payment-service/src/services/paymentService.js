@@ -29,14 +29,7 @@ const paymentService = {
   createPayment: (id, data) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const { ticketId, quantity } = data;
-        const ticketDetail = await rabbitMQHandler.getTicketFromTicketId(
-          ticketId,
-        );
-        if(quantity > (ticketDetail?.data.quantity - ticketDetail?.data.soldQuantity)) {
-          return reject(new BaseErrorResponse({ message: "Not enough quantity" }));
-        }
-        const amount = ticketDetail?.data.price * quantity * 100;
+        const { ticketId, quantity, amount } = data;
         const secretToken = bcrypt.hash(process.env.VN_PAY_HASH_KEY, 10);
         const merchantId = process.env.VN_PAY_MERCHANT_ID;
         const hashSecret = process.env.VN_PAY_HASH_SECRET;

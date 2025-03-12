@@ -3,15 +3,6 @@
 import paymentService from "../services/paymentService";
 
 const paymentController = {
-  createPayment: async (req, res) => {
-    try {
-      const { id } = req.user;
-      const result = await paymentService.createPayment(id, req.body);
-      res.status(result.status).json(result);
-    } catch (error) {
-      res.status(error.status).json(error);
-    }
-  },
   createBooking: async (req, res) => {
     try {
       const {
