@@ -1,15 +1,16 @@
 version: "3.8"
 
 services:
-  redis:
+  redis-cache:
+    container_name: event-booking-redis
     image: redis:alpine
     restart: always
     ports:
       - "6379:6379"
     volumes:
-      - ./redis-data:/data
+      - .volumes/redis-data:/data
     networks:
-      - my-network
+      - event-network
     environment:
       REDIS_PASSWORD: password
     command: redis-server --requirepass password
@@ -19,7 +20,8 @@ services:
       timeout: 5s
       retries: 10
 
-  rabbitmq:
+  rabbitmq-broker:
+    container_name: event-booking-rabbitmq
     image: rabbitmq:management
     restart: always
     ports:
@@ -29,10 +31,10 @@ services:
       RABBITMQ_DEFAULT_USER: user
       RABBITMQ_DEFAULT_PASS: password
     volumes:
-      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+      - .volumes/rabbitmq-data:/var/lib/rabbitmq/
+      - .volumes/rabbitmq-logs:/var/log/rabbitmq
     networks:
-      - my-network
+      - event-network
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 10s
@@ -40,6 +42,7 @@ services:
       retries: 10
 
   user-service:
+    container_name: event-booking-user-service
     build:
       context: ./user-service
       dockerfile: ./Dockerfile
@@ -47,19 +50,20 @@ services:
     ports:
       - "8081:8081"
     networks:
-      - my-network
+      - event-network
     environment:
-      - MONGO_URI=mongodb://mongo:27017/db_event_booking
-      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - MONGO_URI=mongodb://event-booking-mongo:27017/db_event_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq-broker:5672
     depends_on:
-      rabbitmq:
+      rabbitmq-broker:
         condition: service_healthy
-      mongo:
+      event-booking-mongo:
         condition: service_healthy
-      redis:
+      redis-cache:
         condition: service_healthy
 
-  workers-service:
+  background-worker:
+    container_name: event-booking-background-worker
     build:
       context: ./workers-service
       dockerfile: ./Dockerfile
@@ -67,19 +71,20 @@ services:
     ports:
       - "8086:8086"
     networks:
-      - my-network
+      - event-network
     environment:
-      - MONGO_URI=mongodb://mongo:27017/db_event_booking
-      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - MONGO_URI=mongodb://event-booking-mongo:27017/db_event_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq-broker:5672
     depends_on:
-      rabbitmq:
+      rabbitmq-broker:
         condition: service_healthy
-      mongo:
+      event-booking-mongo:
         condition: service_healthy
-      redis:
+      redis-cache:
         condition: service_healthy
 
   ticket-service:
+    container_name: event-booking-ticket-service
     build:
       context: ./ticket-service
       dockerfile: ./Dockerfile
@@ -87,20 +92,21 @@ services:
     ports:
       - "8083:8083"
     networks:
-      - my-network
+      - event-network
     environment:
-      - MONGO_URI=mongodb://mongo:27017/db_event_booking
-      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
-      - REDIS_URL=redis://:password@redis:6379
+      - MONGO_URI=mongodb://event-booking-mongo:27017/db_event_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq-broker:5672
+      - REDIS_URL=redis://:password@redis-cache:6379
     depends_on:
-      rabbitmq:
+      rabbitmq-broker:
         condition: service_healthy
-      mongo:
+      event-booking-mongo:
         condition: service_healthy
-      redis:
+      redis-cache:
         condition: service_healthy
 
   booking-service:
+    container_name: event-booking-booking-service
     build:
       context: ./booking-service
       dockerfile: ./Dockerfile
@@ -108,19 +114,20 @@ services:
     ports:
       - "8084:8084"
     networks:
-      - my-network
+      - event-network
     environment:
-      - MONGO_URI=mongodb://mongo:27017/db_event_booking
-      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - MONGO_URI=mongodb://event-booking-mongo:27017/db_event_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq-broker:5672
     depends_on:
-      rabbitmq:
+      rabbitmq-broker:
         condition: service_healthy
-      mongo:
+      event-booking-mongo:
         condition: service_healthy
-      redis:
+      redis-cache:
         condition: service_healthy
 
   event-service:
+    container_name: event-booking-event-service
     build:
       context: ./event-service
       dockerfile: ./Dockerfile
@@ -128,20 +135,21 @@ services:
     ports:
       - "8082:8082"
     networks:
-      - my-network
+      - event-network
     environment:
-      - MONGO_URI=mongodb://mongo:27017/db_event_booking
-      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
-      - REDIS_URL=redis://:password@redis:6379
+      - MONGO_URI=mongodb://event-booking-mongo:27017/db_event_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq-broker:5672
+      - REDIS_URL=redis://:password@redis-cache:6379
     depends_on:
-      rabbitmq:
+      rabbitmq-broker:
         condition: service_healthy
-      mongo:
+      event-booking-mongo:
         condition: service_healthy
-      redis:
+      redis-cache:
         condition: service_healthy
 
   payment-service:
+    container_name: event-booking-payment-service
     build:
       context: ./payment-service
       dockerfile: ./Dockerfile
@@ -149,19 +157,20 @@ services:
     ports:
       - "8085:8085"
     networks:
-      - my-network
+      - event-network
     environment:
-      - MONGO_URI=mongodb://mongo:27017/db_event_booking
-      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - MONGO_URI=mongodb://event-booking-mongo:27017/db_event_booking
+      - RABBITMQ_URL=amqp://user:password@rabbitmq-broker:5672
     depends_on:
-      rabbitmq:
+      rabbitmq-broker:
         condition: service_healthy
-      mongo:
+      event-booking-mongo:
         condition: service_healthy
-      redis:
+      redis-cache:
         condition: service_healthy
 
   api-gateway:
+    container_name: event-booking-api-gateway
     build:
       context: ./api-gateway
       dockerfile: ./Dockerfile
@@ -169,7 +178,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - my-network
+      - event-network
     environment:
       - AUTH_SERVICE_URL=http://user-service:8081
       - EVENT_SERVICE_URL=http://event-service:8082
@@ -187,16 +196,17 @@ services:
         condition: service_started
       payment-service:
         condition: service_started
-      rabbitmq:
+      rabbitmq-broker:
         condition: service_healthy
 
-  mongo:
+  event-booking-mongo:
+    container_name: event-booking-mongo
     image: mongo:latest
     restart: always
     ports:
       - "27017:27017"
     networks:
-      - my-network
+      - event-network
     volumes:
       - mongo-data:/data/db
     healthcheck:
@@ -206,8 +216,9 @@ services:
       retries: 15
 
 networks:
-  my-network:
+  event-network:
     driver: bridge
+    name: event-booking-network
 
 volumes:
   mongo-data:
