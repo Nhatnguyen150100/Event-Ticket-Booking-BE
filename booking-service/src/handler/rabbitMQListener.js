@@ -19,6 +19,20 @@ const rabbitMQListener = () => {
       correlationId,
     });
   });
+  rabbitMQ.on(
+    "get_booking_details_request_queue",
+    async (message, properties) => {
+      const { bookingId } = message;
+
+      const booking = await bookingService.getBookingDetail(bookingId);
+
+      const { correlationId, replyTo } = properties;
+
+      await rabbitMQ.sendMessage(replyTo, booking, {
+        correlationId,
+      });
+    },
+  );
 };
 
 export default rabbitMQListener;

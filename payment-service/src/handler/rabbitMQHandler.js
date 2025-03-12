@@ -27,6 +27,29 @@ const rabbitMQHandler = {
         );
       }
     });
+  },
+  getBookingDetails: (bookingId) => {
+    return new Promise(async (resolve, reject) => {
+      const queue = "get_booking_details_request_queue";
+      const responseQueue = "get_booking_details_response_queue";
+
+      try {
+        await rabbitMQ.send({
+          queue,
+          message: { bookingId },
+          responseQueue,
+          resolve,
+          reject,
+        });
+      } catch (error) {
+        logger.error(error.message);
+        return reject(
+          new BaseErrorResponse({
+            message: "Error sending",
+          }),
+        );
+      }
+    });
   }
 };
 

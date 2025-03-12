@@ -4,6 +4,7 @@ import {
   BaseResponseList,
   BaseSuccessResponse,
 } from "../config/baseResponse";
+import redisDB from "../config/redisDB";
 import { DEFINE_STATUS_RESPONSE } from "../config/statusResponse";
 import logger from "../config/winston";
 import rabbitMQHandler from "../handler/rabbitMQHandler";
@@ -48,7 +49,10 @@ const ticketsService = {
         price,
         quantity,
       });
+
       const savedTicket = await newTicket.save();
+      await redisDB.delPattern(`tickets:eventId=${eventId}:*`);
+
       return new BaseSuccessResponse({
         data: savedTicket,
         message: "Ticket created successfully",
@@ -59,25 +63,32 @@ const ticketsService = {
     }
   },
   getTicketById: async (id, isGetEventInfo = true) => {
+    const cacheKey = `ticket:${id}`;
     try {
+      const cachedData = await redisDB.get(cacheKey);
+      if (cachedData) return cachedData;
+
       const ticket = await Ticket.findById(id);
       if (!ticket) {
         return new BaseErrorResponse({ message: "Ticket not found" });
       }
+
+      let response;
       if (isGetEventInfo) {
         const event = await rabbitMQHandler.getEventDetail(ticket.eventId);
-        if (!event) {
-          return new BaseErrorResponse({ message: "Event not found" });
-        }
-        return new BaseSuccessResponse({
+        response = new BaseSuccessResponse({
           data: { ...ticket.toObject(), event },
           message: "Ticket fetched successfully",
         });
+      } else {
+        response = new BaseSuccessResponse({
+          data: ticket,
+          message: "Ticket fetched successfully",
+        });
       }
-      return new BaseSuccessResponse({
-        data: ticket,
-        message: "Ticket fetched successfully",
-      });
+
+      await redisDB.set(cacheKey, response, { EX: 60 });
+      return response;
     } catch (error) {
       logger.error(error.message);
       return new BaseErrorResponse({ message: "Error fetching ticket" });
@@ -100,6 +111,9 @@ const ticketsService = {
       if (!updatedTicket) {
         return new BaseErrorResponse({ message: "Ticket not found" });
       }
+      await redisDB.del(`ticket:${id}`);
+      await redisDB.delPattern(`tickets:eventId=${updatedTicket.eventId}:*`);
+
       return new BaseSuccessResponse({
         data: updatedTicket,
         message: "Ticket updated successfully",
@@ -145,6 +159,10 @@ const ticketsService = {
       if (!deletedEvent) {
         return new BaseErrorResponse({ message: "Ticket not found" });
       }
+
+      await redisDB.del(`ticket:${id}`);
+      await redisDB.delPattern(`tickets:eventId=${deletedTicket.eventId}:*`);
+
       return new BaseSuccessResponse({
         message: "Ticket deleted successfully",
       });
@@ -156,6 +174,8 @@ const ticketsService = {
   deleteListTickets: async (eventId) => {
     try {
       await Ticket.deleteMany({ eventId });
+      await redisDB.delPattern(`tickets:eventId=${eventId}:*`);
+
       return new BaseSuccessResponse({
         message: "Tickets deleted successfully",
       });
@@ -165,7 +185,11 @@ const ticketsService = {
     }
   },
   getAllTicketFromEvent: async ({ page = 1, limit = 10, eventId }) => {
+    const cacheKey = `tickets:eventId=${eventId}:page=${page}:limit=${limit}`;
     try {
+      const cachedData = await redisDB.get(cacheKey);
+      if (cachedData) return cachedData;
+
       if (!eventId) {
         return new BaseErrorResponse({ message: "Event ID is required" });
       }
@@ -178,12 +202,16 @@ const ticketsService = {
       const tickets = await Ticket.find(query).skip(skip).limit(limit);
       const totalCount = await Ticket.countDocuments(query);
 
-      return new BaseResponseList({
+      const response = new BaseResponseList({
         status: DEFINE_STATUS_RESPONSE.SUCCESS,
         list: tickets,
         totalCount,
         message: "Tickets fetched successfully",
       });
+
+      await redisDB.set(cacheKey, response, { EX: 60 });
+      
+      return response;
     } catch (error) {
       logger.error(error.message);
       return new BaseErrorResponse({ message: "Error fetching tickets" });

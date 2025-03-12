@@ -22,6 +22,12 @@ const bookingService = {
       const { data: ticketDetail } =
         await rabbitMQHandler.getTicketFromTicketId(ticketId);
 
+      if (quantity > ticketDetail?.quantity - ticketDetail?.soldQuantity) {
+        return reject(
+          new BaseErrorResponse({ message: "Not enough quantity" }),
+        );
+      }
+
       const booking = new Booking({
         userId,
         ticketId,
@@ -52,6 +58,64 @@ const bookingService = {
       logger.error(error.message);
       return new BaseErrorResponse({
         message: error?.message ?? "Created booking failed",
+      });
+    }
+  },
+  cancelBooking: async (userId, bookingId) => {
+    try {
+      const booking = await Booking.findById(bookingId);
+      if (!booking) {
+        return new BaseErrorResponse({ message: "Booking not found" });
+      }
+
+      if (booking.userId.toString() !== userId) {
+        return new BaseErrorResponse({
+          message: "You are not authorized to cancel this booking",
+        });
+      }
+
+      const refund = await rabbitMQHandler.refundPayment({
+        userId: booking.userId,
+        booking,
+      });
+
+      if (!refund) {
+        return new BaseErrorResponse({ message: "Refund failed" });
+      }
+
+      const cancelBooking = await Booking.findByIdAndUpdate(
+        bookingId,
+        {
+          status: "CANCELLED",
+        },
+        {
+          new: true,
+        },
+      );
+      if (!cancelBooking) {
+        return new BaseErrorResponse({ message: "Booking not found" });
+      }
+
+      const outbox = new Outbox({
+        type: "TICKET_UPDATE",
+        payload: {
+          ticketId: cancelBooking.ticketId,
+          quantity: cancelBooking.quantity,
+          operation: "DECREMENT",
+        },
+        status: "PENDING",
+      });
+
+      await outbox.save();
+
+      return new BaseSuccessResponse({
+        data: cancelBooking,
+        message: "Booking cancel successfully",
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return new BaseErrorResponse({
+        message: error?.message ?? "Cancel booking failed",
       });
     }
   },
@@ -89,10 +153,16 @@ const bookingService = {
       return new BaseErrorResponse({ message: "Error fetching booking" });
     }
   },
-  getListBookingByUserId: async ({ userId, page = 1, limit = 10 }) => {
+  getListBookingByUserId: async ({
+    userId,
+    page = 1,
+    limit = 10,
+    status = "CONFIRMED",
+  }) => {
     try {
       const query = {
         userId,
+        status,
       };
 
       const skip = (page - 1) * limit;

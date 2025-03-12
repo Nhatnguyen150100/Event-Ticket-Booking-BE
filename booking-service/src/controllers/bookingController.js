@@ -24,6 +24,16 @@ const bookingController = {
       res.status(error.status).json(error);
     }
   },
+  cancelBooking: async (req, res) => {
+    try {
+      const user = req.user;
+      const { id } = req.params;
+      const result = await bookingService.cancelBooking(user.id, id);
+      res.status(result.status).json(result);
+    } catch (error) {
+      res.status(error.status).json(error);
+    }
+  },
   getBookingDetail: async (req, res) => {
     try {
       const { id } = req.params;

@@ -22,4 +22,10 @@ bookingRouters.post(
   bookingController.createBooking,
 );
 
+bookingRouters.delete(
+  "/:id",
+  tokenMiddleware.verifyToken,
+  bookingController.cancelBooking,
+);
+
 export default bookingRouters;

@@ -3,6 +3,7 @@ import {
   BaseResponseList,
   BaseSuccessResponse,
 } from "../config/baseResponse";
+import redisDB from "../config/redisDB";
 import { DEFINE_STATUS_RESPONSE } from "../config/statusResponse";
 import logger from "../config/winston";
 import rabbitMQHandler from "../handler/rabbitMQHandler";
@@ -43,10 +44,22 @@ const eventService = {
   },
   getEventById: async (id) => {
     try {
+      const eventFromCache = await redisDB.get(id);
+      if (eventFromCache) {
+        return new BaseSuccessResponse({
+          data: eventFromCache,
+          message: "Event fetched successfully",
+        });
+      }
+
       const event = await Event.findById(id);
       if (!event) {
         return new BaseErrorResponse({ message: "Event not found" });
       }
+
+      await redisDB.set(id, event, {
+        EX: 60,
+      });
 
       return new BaseSuccessResponse({
         data: event,
@@ -59,9 +72,19 @@ const eventService = {
   },
   updateEvent: async (id, data) => {
     try {
+      const checkEventCache = await redisDB.get(id);
+      if (checkEventCache) {
+        await redisDB.remove(id);
+      }
+
       const updatedEvent = await Event.findByIdAndUpdate(id, data, {
         new: true,
       });
+
+      await redisDB.set(id, updatedEvent, {
+        EX: 60,
+      });
+
       if (!updatedEvent) {
         return new BaseErrorResponse({ message: "Event not found" });
       }
@@ -76,6 +99,11 @@ const eventService = {
   },
   deleteEvent: async (id) => {
     try {
+      const checkEventCache = await redisDB.get(id);
+      if (checkEventCache) {
+        await redisDB.remove(id);
+      }
+
       const event = await Event.findById(id);
       if (!event) {
         return new BaseErrorResponse({ message: "Event not found" });
@@ -93,6 +121,13 @@ const eventService = {
   },
   getAllEvents: async (page = 1, limit = 10, name = "", type = "") => {
     try {
+      const cacheKey = `events:page=${page}:limit=${limit}:name=${name}:type=${type}`;
+
+      const eventsFromCache = await redisDB.get(cacheKey);
+      if (eventsFromCache) {
+        return eventsFromCache;
+      }
+
       const query = {};
       if (name) {
         query.name = { $regex: name, $options: "i" };
@@ -109,12 +144,18 @@ const eventService = {
       const events = await Event.find(query).skip(skip).limit(limit);
       const totalCount = await Event.countDocuments(query);
 
-      return new BaseResponseList({
+      const response = new BaseResponseList({
         status: DEFINE_STATUS_RESPONSE.SUCCESS,
         list: events,
         totalCount,
         message: "Events fetched successfully",
       });
+
+      await redisDB.set(cacheKey, response, {
+        EX: 60,
+      });
+
+      return response;
     } catch (error) {
       logger.error(error.message);
       return new BaseErrorResponse({ message: "Error fetching events" });

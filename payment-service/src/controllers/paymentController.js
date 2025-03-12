@@ -11,6 +11,7 @@ const paymentController = {
         ticketId,
         secretToken,
         quantity,
+        vnp_Amount
       } = req.query;
       if (vnp_TransactionStatus === "00") {
         await paymentService.createBooking(
@@ -18,6 +19,7 @@ const paymentController = {
           ticketId,
           quantity,
           secretToken,
+          vnp_Amount
         );
         res.redirect(`${process.env.BASE_URL_CLIENT}/payment-success`);
       } else {

@@ -19,6 +19,20 @@ const rabbitMQListener = () => {
       correlationId,
     });
   });
+  rabbitMQ.on("refund_payment_request_queue", async (message, properties) => {
+    const { userId, booking } = message;
+
+    const payment = await paymentService.refundPayment({
+      userId,
+      booking,
+    });
+
+    const { correlationId, replyTo } = properties;
+
+    await rabbitMQ.sendMessage(replyTo, payment, {
+      correlationId,
+    });
+  });
 };
 
 export default rabbitMQListener;

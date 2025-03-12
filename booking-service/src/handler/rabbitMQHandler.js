@@ -55,6 +55,35 @@ const rabbitMQHandler = {
         );
       }
     });
+  },
+  refundPayment: ({
+    userId,
+    booking,
+  }) => {
+    return new Promise(async (resolve, reject) => {
+      const queue = "refund_payment_request_queue";
+      const responseQueue = "refund_payment_response_queue";
+
+      try {
+        await rabbitMQ.send({
+          queue,
+          message: {
+            userId,
+            booking,
+          },
+          responseQueue,
+          resolve,
+          reject,
+        });
+      } catch (error) {
+        logger.error(error.message);
+        return reject(
+          new BaseErrorResponse({
+            message: "Error sending",
+          }),
+        );
+      }
+    });
   }
 };
 
