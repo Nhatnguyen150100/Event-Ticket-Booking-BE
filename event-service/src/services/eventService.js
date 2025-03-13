@@ -115,6 +115,8 @@ const eventService = {
       await rabbitMQHandler.sendDeleteTicketsRequest(event._id);
 
       await Event.findByIdAndDelete(id);
+      
+      await redisDB.delPattern(`events:*`);
 
       return new BaseSuccessResponse({ message: "Event deleted successfully" });
     } catch (error) {
