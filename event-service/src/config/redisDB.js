@@ -49,14 +49,14 @@ class RedisDB {
     }
   }
 
-  async remove(key) {
+  async del(key) {
     await this.connect();
     try {
       const result = await this.client.del(key);
       logger.info(`Remove key: ${key}`);
       return result;
     } catch (error) {
-      logger.error(`Error remove key ${key}:`, error.message);
+      logger.error(`Error del key ${key}:`, error.message);
       throw error;
     }
   }

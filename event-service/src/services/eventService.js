@@ -33,6 +33,8 @@ const eventService = {
         eventOrganization,
       });
       const savedEvent = await newEvent.save();
+      await redisDB.delPattern(`events:*`);
+
       return new BaseSuccessResponse({
         data: savedEvent,
         message: "Event created successfully",
@@ -74,12 +76,13 @@ const eventService = {
     try {
       const checkEventCache = await redisDB.get(id);
       if (checkEventCache) {
-        await redisDB.remove(id);
+        await redisDB.del(id);
       }
 
       const updatedEvent = await Event.findByIdAndUpdate(id, data, {
         new: true,
       });
+      await redisDB.delPattern(`events:*`);
 
       await redisDB.set(id, updatedEvent, {
         EX: 60,
@@ -101,7 +104,7 @@ const eventService = {
     try {
       const checkEventCache = await redisDB.get(id);
       if (checkEventCache) {
-        await redisDB.remove(id);
+        await redisDB.del(id);
       }
 
       const event = await Event.findById(id);
@@ -119,7 +122,7 @@ const eventService = {
       return new BaseErrorResponse({ message: "Error deleting event" });
     }
   },
-  getAllEvents: async (page = 1, limit = 10, name = "", type = "") => {
+  getAllEvents: async ({ page = 1, limit = 10, name = "", type = "" }) => {
     try {
       const cacheKey = `events:page=${page}:limit=${limit}:name=${name}:type=${type}`;
 
