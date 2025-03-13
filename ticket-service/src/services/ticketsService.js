@@ -155,13 +155,15 @@ const ticketsService = {
   },
   deleteTicket: async (id) => {
     try {
-      const deletedEvent = await Ticket.findByIdAndDelete(id);
+      const deletedEvent = await Ticket.findById(id);
       if (!deletedEvent) {
         return new BaseErrorResponse({ message: "Ticket not found" });
       }
 
       await redisDB.del(`ticket:${id}`);
       await redisDB.delPattern(`tickets:eventId=${deletedTicket.eventId}:*`);
+
+      await Ticket.findByIdAndDelete(id);
 
       return new BaseSuccessResponse({
         message: "Ticket deleted successfully",
