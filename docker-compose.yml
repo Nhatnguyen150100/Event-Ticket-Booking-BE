@@ -137,6 +137,7 @@ services:
     networks:
       - event-network
     environment:
+      - BASE_URL_SERVER=http://localhost:8080
       - MONGO_URI=mongodb://event-booking-mongo:27017/db_event_booking
       - RABBITMQ_URL=amqp://user:password@rabbitmq-broker:5672
       - REDIS_URL=redis://:password@redis-cache:6379
