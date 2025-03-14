@@ -15,21 +15,29 @@ const eventService = {
       const {
         name,
         imageThumbnail,
-        time,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
         type,
         location,
         description,
         capacity,
+        contact,
         eventOrganization,
       } = data;
       const newEvent = new Event({
         name,
         imageThumbnail,
-        time,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
         type,
         location,
         description,
         capacity,
+        contact,
         eventOrganization,
       });
       const savedEvent = await newEvent.save();

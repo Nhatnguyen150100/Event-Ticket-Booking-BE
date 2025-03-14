@@ -29,13 +29,25 @@ const eventSchema = new Schema(
       type: String,
       required: true,
     },
-    time: {
+    startDate: {
       type: Date,
       required: true,
+    },
+    endDate: {
+      type: Date,
+    },
+    startTime: {
+      type: String,
+    },
+    endTime: {
+      type: String,
     },
     location: {
       type: String,
       required: true,
+    },
+    contact: {
+      type: String,
     },
     description: {
       type: String,
