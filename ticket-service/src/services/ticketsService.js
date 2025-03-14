@@ -33,9 +33,12 @@ const ticketsService = {
 
       const tickets = await Ticket.find({ eventId });
 
+      console.log("🚀 ~ createTicket: ~ tickets:", tickets)
       const total = tickets.reduce((accumulator, ticket) => {
         return accumulator + ticket.quantity;
       }, 0);
+      console.log("🚀 ~ total ~ total:", total)
+      console.log("🚀 ~ createTicket: ~ event.data.capacity:", event.data.capacity)
 
       if (total + quantity > event.data.capacity) {
         return new BaseErrorResponse({
@@ -161,7 +164,7 @@ const ticketsService = {
       }
 
       await redisDB.del(`ticket:${id}`);
-      await redisDB.delPattern(`tickets:eventId=${deletedTicket.eventId}:*`);
+      await redisDB.delPattern(`tickets:eventId=${deletedEvent.eventId}:*`);
 
       await Ticket.findByIdAndDelete(id);
 
